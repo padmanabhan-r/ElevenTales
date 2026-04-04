@@ -13,6 +13,9 @@ export interface StoryScene {
 
 // Minimum wait before generating subsequent images (not the first)
 const SUBSEQUENT_DELAY_MS = 3_000;
+// Minimum accumulated story text before the first image fires (avoids generating
+// on a short greeting/intro before the AI has actually started the story).
+const FIRST_IMAGE_MIN_CHARS = 150;
 // If a tool call fired an image within this window, the turn-complete fallback stays silent.
 // This prevents double-firing when Gemini is actively using generate_illustration.
 const TOOL_CALL_GRACE_MS = 25_000;
@@ -63,10 +66,11 @@ export function useStoryImages(imageStyle: string, sessionId: string, intervalSe
       const now = Date.now();
       const isFirst = sceneCountRef.current === 0;
 
-      // First image: fire as soon as the first turn completes, with only a small buffer
-      // to ensure there's enough story text to describe a meaningful scene.
+      // First image: wait for the AI to have narrated enough story content.
+      // The opening greeting/intro is typically too thin to produce a meaningful scene.
       if (isFirst) {
         if (now - sessionStartTimeRef.current < SUBSEQUENT_DELAY_MS) return;
+        if (storyContextRef.current.length < FIRST_IMAGE_MIN_CHARS) return;
       } else {
         // If Gemini used the tool recently, trust it — don't double-fire
         if (now - lastToolCallTimeRef.current < TOOL_CALL_GRACE_MS) return;
