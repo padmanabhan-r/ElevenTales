@@ -254,7 +254,6 @@ const StoryScreen = ({ character, theme, propImage, propDescription, propImageMi
     theme,
     propImage,
     propDescription,
-    onImageTrigger: triggerImageGeneration,
     onGenerateIllustration: forceImageGeneration,
     onTranscription: (msg) => {
       if (msg.type === "character" && !storyFirstLineRef.current) {
