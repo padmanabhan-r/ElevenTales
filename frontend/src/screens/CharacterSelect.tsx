@@ -75,7 +75,7 @@ const CharacterSelect = ({ onSelect, onBack }: Props) => {
     <div className="relative h-screen bg-sky-gradient overflow-hidden flex flex-col">
       <FloatingElements />
 
-      <div className="relative z-10 flex flex-col justify-center h-full container mx-auto px-4 py-4 gap-4">
+      <div className="relative z-10 flex flex-col justify-center h-full container mx-auto px-4 py-4 gap-3">
         {/* Home button */}
         {onBack && (
           <motion.button
@@ -172,25 +172,50 @@ const CharacterSelect = ({ onSelect, onBack }: Props) => {
           </div>
         </motion.div>
 
-        {/* Custom voice actions */}
+        {/* Divider — Create */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: selectedId ? 0 : 1 }}
+          transition={{ duration: 0.3 }}
+          className="flex items-center gap-4"
+        >
+          <div className="flex-1 h-px bg-border/50" />
+          <span className="font-display text-sm text-magic-pink font-bold px-3 py-1 rounded-full border border-magic-pink/30 bg-card/40 backdrop-blur-sm">
+            ✨ Create Your Storyteller
+          </span>
+          <div className="flex-1 h-px bg-border/50" />
+        </motion.div>
+
+        {/* Create cards */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: selectedId ? 0 : 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="flex flex-wrap justify-center gap-3"
+          transition={{ delay: 0.55 }}
+          className="flex justify-center gap-4"
         >
-          <button
-            disabled
-            className="flex items-center gap-2 px-5 py-2.5 rounded-full border border-primary/30 bg-card/50 backdrop-blur-sm text-sm font-body text-primary/60 cursor-not-allowed opacity-60"
-          >
-            🎨 Design a custom voice
-          </button>
-          <button
-            disabled
-            className="flex items-center gap-2 px-5 py-2.5 rounded-full border border-magic-teal/30 bg-card/50 backdrop-blur-sm text-sm font-body text-magic-teal/60 cursor-not-allowed opacity-60"
-          >
-            🎙️ Clone your voice
-          </button>
+          {/* Design a Voice */}
+          <div className="relative flex items-center gap-3 px-5 py-3 rounded-2xl bg-card/60 backdrop-blur-sm border border-border/50 w-44 sm:w-52 opacity-60 cursor-not-allowed select-none">
+            <span className="absolute -top-2 -right-2 bg-magic-orange text-white font-display text-xs font-bold px-2 py-0.5 rounded-full">
+              Soon
+            </span>
+            <span className="text-2xl shrink-0">🎨</span>
+            <div>
+              <p className="font-display text-sm font-bold text-foreground leading-tight">Design a Voice</p>
+              <p className="text-xs text-muted-foreground mt-0.5 leading-tight">Describe your character</p>
+            </div>
+          </div>
+
+          {/* Clone a Voice */}
+          <div className="relative flex items-center gap-3 px-5 py-3 rounded-2xl bg-card/60 backdrop-blur-sm border border-border/50 w-44 sm:w-52 opacity-60 cursor-not-allowed select-none">
+            <span className="absolute -top-2 -right-2 bg-magic-teal text-white font-display text-xs font-bold px-2 py-0.5 rounded-full">
+              Soon
+            </span>
+            <span className="text-2xl shrink-0">🎙️</span>
+            <div>
+              <p className="font-display text-sm font-bold text-foreground leading-tight">Clone a Voice</p>
+              <p className="text-xs text-muted-foreground mt-0.5 leading-tight">Use your own voice</p>
+            </div>
+          </div>
         </motion.div>
       </div>
     </div>
