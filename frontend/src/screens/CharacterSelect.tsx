@@ -165,7 +165,7 @@ const CharacterSelect = ({ onSelect, onBack }: Props) => {
           className="flex items-center gap-4"
         >
           <div className="flex-1 h-px bg-border/50" />
-          <span className="font-display text-sm text-magic-orange font-bold px-3 py-1 rounded-full border border-magic-orange/30 bg-card/40 backdrop-blur-sm">
+          <span className="font-display text-xl sm:text-2xl text-magic-orange font-bold">
             🌏 World Language Storytellers
           </span>
           <div className="flex-1 h-px bg-border/50" />
