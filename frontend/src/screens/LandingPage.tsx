@@ -26,7 +26,7 @@ const LandingPage = ({ onStoryMode }: Props) => {
       {/* Background */}
       <div className="absolute inset-0">
         <img src={heroBg} alt="Magical night sky" className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-background/15" />
+        <div className="absolute inset-0 bg-background/50" />
       </div>
 
       <FloatingElements />
@@ -120,7 +120,7 @@ const LandingPage = ({ onStoryMode }: Props) => {
             onClick={onStoryMode}
             className="px-10 py-5 rounded-full bg-primary text-primary-foreground font-display text-xl sm:text-2xl font-bold magic-glow animate-glow-pulse hover:brightness-110 transition-all"
           >
-            Begin Your Adventure
+            ✨ Begin Your Adventure ✨
           </motion.button>
 
           <motion.div
