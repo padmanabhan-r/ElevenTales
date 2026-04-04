@@ -11,10 +11,3 @@ build = ["sh", "-c", "cd frontend && npm install && npm run build && mkdir -p ..
 [[ports]]
 localPort = 8080
 externalPort = 80
-
-[userenv]
-
-[userenv.shared]
-ELEVENLABS_API_KEY = "sk_432c80b41b37aa5bf5c6387126d33b10dcd198327a903fea"
-GEMINI_API_KEY = "AIzaSyDqNREQKA9vgAUr9orU-0Fbmyi0A_tCdPc"
-IMAGE_MODEL = "gemini-3.1-flash-image-preview"
