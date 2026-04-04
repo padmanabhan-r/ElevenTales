@@ -37,13 +37,34 @@ SAMPLE_TEXT = (
     "something extraordinary was about to happen! Come, let me tell you the most wonderful story!"
 )
 
-# Voice Design descriptions per character
+# Voice Design descriptions per character — ElevenLabs recommended format:
+# "Native <Language>. <Gender>, <Age>. <Quality>. Persona: <2–5 words>. Emotion: <2–3 adjectives>. <1–2 sentences timbre + pacing>"
 VOICE_DESCRIPTIONS: dict[str, str] = {
-    "wizard":    "A warm, wise, wonderfully playful wizard with a rich, deep baritone voice, full of mystery and theatrical flair. British-inflected, ancient but warm.",
-    "fairy":     "A light, musical, airy soprano voice, like wind chimes and laughter together. Warm, kind, gently whimsical — a fairy storyteller.",
-    "pirate":    "A bold, energetic pirate captain voice, full of life and sea spray. Warm heart behind the boisterous exterior. Fun for children.",
-    "dadi":      "A warm, loving Hindi grandmother voice, slow and full of love. Gentle and maternal, like a real dadi telling bedtime stories.",
-    "rajvikram": "A warm, regal Tamil king voice, deep and kind. Full of storytelling energy, gentle despite the royal bearing.",
+    "wizard": (
+        "Native British English. Male, elder (60s–70s). Studio quality. "
+        "Persona: ancient wizard, warm grandfather. Emotion: playful, wise, warm. "
+        "Rich, full baritone with natural theatrical resonance; measured and deliberate for mysterious moments, brighter and faster when the magic crackles."
+    ),
+    "fairy": (
+        "Native British English. Female, young adult (20s). Studio quality. "
+        "Persona: whimsical fairy storyteller. Emotion: warm, delighted, magical. "
+        "Light soprano voice with an airy, breathy quality and natural musical lilt; pacing varies from slow hushed near-whispers at magical reveals to bright and quick with excitement."
+    ),
+    "pirate": (
+        "Native English. Female, adult (30s). Studio quality. "
+        "Persona: bold, warm-hearted pirate captain. Emotion: energetic, brave, joyful. "
+        "Clear mid-range voice with bold, punchy delivery and natural forward momentum; slows to wonder at discoveries, speeds up with the thrill of adventure."
+    ),
+    "dadi": (
+        "Native Hindi. Female, elder (60s–70s). Studio quality. "
+        "Persona: loving Indian grandmother. Emotion: warm, gentle, maternal. "
+        "Soft mid-range voice with slow, deliberate pacing and natural age in the warmth; rises softly with delight and lowers warmly for mystery, never rushing."
+    ),
+    "rajvikram": (
+        "Native Tamil. Male, adult (40s–50s). Studio quality. "
+        "Persona: regal, kind Tamil king. Emotion: warm, dignified, gentle. "
+        "Deep baritone with clear resonance and natural Tamil cadence; measured and confident delivery that slows for wisdom and mystery, brightens with storytelling energy."
+    ),
 }
 
 # Agent tool definitions — registered in conversation_config.agent.prompt.tools

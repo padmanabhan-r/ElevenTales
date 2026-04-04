@@ -72,19 +72,19 @@ const CharacterSelect = ({ onSelect, onBack }: Props) => {
   );
 
   return (
-    <div className="relative min-h-screen bg-sky-gradient overflow-hidden">
+    <div className="relative h-screen bg-sky-gradient overflow-hidden flex flex-col">
       <FloatingElements />
 
-      <div className="relative z-10 container mx-auto px-4 py-4 sm:py-6">
+      <div className="relative z-10 flex flex-col justify-center h-full container mx-auto px-4 py-4 gap-4">
         {/* Home button */}
         {onBack && (
           <motion.button
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             onClick={onBack}
-            className="mb-3 text-muted-foreground hover:text-foreground font-body transition-colors"
+            className="self-start text-muted-foreground hover:text-foreground font-body transition-colors"
           >
-            Home
+            ← Home
           </motion.button>
         )}
 
@@ -92,13 +92,24 @@ const CharacterSelect = ({ onSelect, onBack }: Props) => {
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-4"
+          className="text-center"
         >
-          <h1 className="font-display text-3xl sm:text-5xl font-extrabold text-primary mb-2">
+          <h1 className="font-display text-3xl sm:text-5xl font-extrabold text-primary mb-1">
             Choose Your Storyteller
           </h1>
           <p className="text-foreground/70 font-body text-base sm:text-lg">
             Pick a friend to tell you a magical story ✨
+          </p>
+          <p className="mt-1 text-xs text-muted-foreground/60 font-body">
+            Voices crafted with{" "}
+            <a
+              href="https://elevenlabs.io/docs/eleven-api/guides/how-to/voices/voice-design"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline underline-offset-2 hover:text-muted-foreground transition-colors"
+            >
+              ElevenLabs Voice Design
+            </a>
           </p>
         </motion.div>
 
@@ -107,9 +118,8 @@ const CharacterSelect = ({ onSelect, onBack }: Props) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
-          className="mb-6"
         >
-          <h2 className="font-display text-xl sm:text-2xl font-bold text-magic-teal mb-5 text-center">
+          <h2 className="font-display text-xl sm:text-2xl font-bold text-magic-teal mb-3 text-center">
             🌍 English Storytellers
           </h2>
           <div className="flex flex-wrap justify-center gap-4 sm:gap-6">
@@ -132,11 +142,11 @@ const CharacterSelect = ({ onSelect, onBack }: Props) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: selectedId ? 0 : 1 }}
           transition={{ duration: 0.3 }}
-          className="flex items-center gap-4 mb-6"
+          className="flex items-center gap-4"
         >
           <div className="flex-1 h-px bg-border/50" />
           <span className="font-display text-sm text-magic-orange font-bold px-3 py-1 rounded-full border border-magic-orange/30 bg-card/40 backdrop-blur-sm">
-            🌏 World Languages
+            🌏 World Language Storytellers
           </span>
           <div className="flex-1 h-px bg-border/50" />
         </motion.div>
@@ -147,22 +157,40 @@ const CharacterSelect = ({ onSelect, onBack }: Props) => {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
         >
-          <h2 className="font-display text-xl sm:text-2xl font-bold text-magic-orange mb-4 text-center">
-            🌏 World Language Storytellers (Experimental)
-          </h2>
           <div className="flex flex-wrap justify-center gap-4 sm:gap-6">
             {otherChars.map((char, i) => (
               <CharacterCard
                 key={char.id}
                 character={char}
                 onSelect={handleSelect}
-                index={i + 4}
+                index={i + englishChars.length}
                 disabled={!!selectedId}
                 selected={selectedId === char.id}
                 dismissed={!!selectedId && selectedId !== char.id}
               />
             ))}
           </div>
+        </motion.div>
+
+        {/* Custom voice actions */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: selectedId ? 0 : 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="flex flex-wrap justify-center gap-3"
+        >
+          <button
+            disabled
+            className="flex items-center gap-2 px-5 py-2.5 rounded-full border border-primary/30 bg-card/50 backdrop-blur-sm text-sm font-body text-primary/60 cursor-not-allowed opacity-60"
+          >
+            🎨 Design a custom voice
+          </button>
+          <button
+            disabled
+            className="flex items-center gap-2 px-5 py-2.5 rounded-full border border-magic-teal/30 bg-card/50 backdrop-blur-sm text-sm font-body text-magic-teal/60 cursor-not-allowed opacity-60"
+          >
+            🎙️ Clone your voice
+          </button>
         </motion.div>
       </div>
     </div>
