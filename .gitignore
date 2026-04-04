@@ -2,3 +2,33 @@ tasks/
 misc/
 .claude/
 CLAUDE.md
+
+# Python
+backend/.venv/
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Node
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Environment / secrets
+.env
+.env.local
+.env.*.local
+backend/.env
+backend/character_ids.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
