@@ -120,7 +120,7 @@ const LandingPage = ({ onStoryMode }: Props) => {
             onClick={onStoryMode}
             className="px-10 py-5 rounded-full bg-primary text-primary-foreground font-display text-xl sm:text-2xl font-bold magic-glow animate-glow-pulse hover:brightness-110 transition-all"
           >
-            ✨ Begin Your Adventure ✨
+            Begin Your Adventure
           </motion.button>
 
           <motion.div
