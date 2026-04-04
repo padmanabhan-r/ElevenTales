@@ -1,0 +1,155 @@
+2026-04-04 20:39:40.39
+d026d9c9
+System
+command finished with error [sh -c cd backend && uvicorn main:app --host 0.0.0.0 --port 8080]: exit status 127
+2026-04-04 20:39:42.49
+d026d9c9
+User
+sh: line 1: uvicorn: command not found
+2026-04-04 20:39:42.49
+d026d9c9
+System
+command finished with error [sh -c cd backend && uvicorn main:app --host 0.0.0.0 --port 8080]: exit status 127
+2026-04-04 20:39:42.52
+d026d9c9
+User
+sh: line 1: uvicorn: command not found
+2026-04-04 20:39:42.52
+d026d9c9
+System
+command finished with error [sh -c cd backend && uvicorn main:app --host 0.0.0.0 --port 8080]: exit status 127
+2026-04-04 20:39:48.31
+d026d9c9
+User
+sh: line 1: uvicorn: command not found
+2026-04-04 20:39:48.31
+d026d9c9
+System
+command finished with error [sh -c cd backend && uvicorn main:app --host 0.0.0.0 --port 8080]: exit status 127
+2026-04-04 20:39:54.34
+d026d9c9
+User
+sh: line 1: uvicorn: command not found
+2026-04-04 20:39:54.34
+d026d9c9
+System
+command finished with error [sh -c cd backend && uvicorn main:app --host 0.0.0.0 --port 8080]: exit status 127
+2026-04-04 20:39:54.40
+d026d9c9
+System
+crash loop detected
+2026-04-04 20:39:54.40
+d026d9c9
+System
+crash loop detected
+2026-04-04 20:40:00.18
+d026d9c9
+System
+starting up user application
+2026-04-04 20:40:00.18
+d026d9c9
+System
+metasidecar: loaded enterprise status from environment is_enterprise=false
+2026-04-04 20:40:00.18
+d026d9c9
+System
+forwarding local port 5000 to external port 80 (mapped as 1104)
+2026-04-04 20:40:00.27
+d026d9c9
+User
+sh: line 1: uvicorn: command not found
+2026-04-04 20:40:00.27
+d026d9c9
+System
+command finished with error [sh -c cd backend && uvicorn main:app --host 0.0.0.0 --port 8080]: exit status 127
+2026-04-04 20:40:00.29
+d026d9c9
+User
+sh: line 1: uvicorn: command not found
+2026-04-04 20:40:00.30
+d026d9c9
+System
+command finished with error [sh -c cd backend && uvicorn main:app --host 0.0.0.0 --port 8080]: exit status 127
+2026-04-04 20:40:00.49
+d026d9c9
+User
+sh: line 1: uvicorn: command not found
+2026-04-04 20:40:00.49
+d026d9c9
+System
+command finished with error [sh -c cd backend && uvicorn main:app --host 0.0.0.0 --port 8080]: exit status 127
+2026-04-04 20:40:00.80
+d026d9c9
+User
+sh: line 1: uvicorn: command not found
+2026-04-04 20:40:00.80
+d026d9c9
+System
+command finished with error [sh -c cd backend && uvicorn main:app --host 0.0.0.0 --port 8080]: exit status 127
+2026-04-04 20:40:00.94
+d026d9c9
+User
+sh: line 1: uvicorn: command not found
+2026-04-04 20:40:00.94
+d026d9c9
+System
+command finished with error [sh -c cd backend && uvicorn main:app --host 0.0.0.0 --port 8080]: exit status 127
+2026-04-04 20:40:02.52
+d026d9c9
+User
+sh: line 1: uvicorn: command not found
+2026-04-04 20:40:02.52
+d026d9c9
+System
+command finished with error [sh -c cd backend && uvicorn main:app --host 0.0.0.0 --port 8080]: exit status 127
+2026-04-04 20:40:05.67
+d026d9c9
+User
+sh: line 1: uvicorn: command not found
+2026-04-04 20:40:05.67
+d026d9c9
+System
+command finished with error [sh -c cd backend && uvicorn main:app --host 0.0.0.0 --port 8080]: exit status 127
+2026-04-04 20:40:08.26
+d026d9c9
+User
+sh: line 1: uvicorn: command not found
+2026-04-04 20:40:08.27
+d026d9c9
+System
+command finished with error [sh -c cd backend && uvicorn main:app --host 0.0.0.0 --port 8080]: exit status 127
+2026-04-04 20:40:08.27
+d026d9c9
+System
+command finished with error [sh -c cd backend && uvicorn main:app --host 0.0.0.0 --port 8080]: exit status 127
+2026-04-04 20:40:08.27
+d026d9c9
+System
+command finished with error [sh -c cd backend && uvicorn main:app --host 0.0.0.0 --port 8080]: exit status 127
+2026-04-04 20:40:16.63
+d026d9c9
+User
+sh: line 1: uvicorn: command not found
+2026-04-04 20:40:16.63
+d026d9c9
+System
+command finished with error [sh -c cd backend && uvicorn main:app --host 0.0.0.0 --port 8080]: exit status 127
+2026-04-04 20:40:19.29
+d026d9c9
+User
+sh: line 1: uvicorn: command not found
+2026-04-04 20:40:19.29
+d026d9c9
+System
+command finished with error [sh -c cd backend && uvicorn main:app --host 0.0.0.0 --port 8080]: exit status 127
+2026-04-04 20:40:24.36
+d026d9c9
+System
+crash loop detected
+
+Collapse
+
+Wrap
+
+Colors
+
