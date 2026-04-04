@@ -412,38 +412,6 @@ const OPTION_CARDS: { id: OptionId; emoji: string; title: string; description: s
   { id: "sketch", emoji: "✏️", title: "Sketch a Theme",  description: "Draw whatever's in your head — I'll bring it to life as your story!" },
 ];
 
-/* ── Character voice announcement via Gemini TTS ── */
-async function playCharacterTTS(text: string, characterId: string) {
-  try {
-    const res = await fetch(`${API_BASE}/api/tts`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text, character_id: characterId }),
-    });
-    if (!res.ok) return;
-    const data: { audio_data: string; mime_type: string } = await res.json();
-
-    // Decode PCM16 → Float32 and play via AudioContext (same path as story playback)
-    const audioCtx = new AudioContext({ sampleRate: 24000 });
-    await audioCtx.resume();
-    const binary = atob(data.audio_data);
-    const bytes = new Uint8Array(binary.length);
-    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-    const int16 = new Int16Array(bytes.buffer);
-    const float32 = new Float32Array(int16.length);
-    for (let i = 0; i < int16.length; i++) float32[i] = int16[i] / 32768;
-    const audioBuffer = audioCtx.createBuffer(1, float32.length, 24000);
-    audioBuffer.getChannelData(0).set(float32);
-    const source = audioCtx.createBufferSource();
-    source.buffer = audioBuffer;
-    source.connect(audioCtx.destination);
-    source.start();
-    source.onended = () => audioCtx.close();
-  } catch {
-    // TTS failed — silently continue, image is already showing
-  }
-}
-
 /* ── Main screen ── */
 const ThemeSelect = ({ character, onBack, onHome, onConfirm }: Props) => {
   const [expanded, setExpanded] = useState<OptionId | null>(null);
@@ -504,14 +472,6 @@ const ThemeSelect = ({ character, onBack, onHome, onConfirm }: Props) => {
       }
       const data = await res.json();
       setter({ loading: false, label: data.label, imageData: data.image_data, mimeType: data.mime_type });
-      // Speak out loud in the character's voice as soon as the object is identified
-      if (data.label) {
-        const action = mode === "camera" ? "brought" : "drew";
-        playCharacterTTS(
-          `Oh wow, you ${action} ${data.label}! Let me bring it to life in your story!`,
-          character.id,
-        );
-      }
     } catch (err) {
       console.error("[preview] failed:", err);
       setter({ loading: false, label: null, imageData: null, mimeType: "" });
