@@ -42,14 +42,8 @@ VOICE_DESCRIPTIONS: dict[str, str] = {
     "wizard":    "A warm, wise, wonderfully playful wizard with a rich, deep baritone voice, full of mystery and theatrical flair. British-inflected, ancient but warm.",
     "fairy":     "A light, musical, airy soprano voice, like wind chimes and laughter together. Warm, kind, gently whimsical — a fairy storyteller.",
     "pirate":    "A bold, energetic pirate captain voice, full of life and sea spray. Warm heart behind the boisterous exterior. Fun for children.",
-    "robot":     "A cheerful, clearly male synthetic voice with a warm robotic affect. Upbeat, curious, enthusiastic — a friendly male robot storyteller for children.",
-    "rajkumari": "A melodious, gentle Indian English voice with musical cadence. Warm and regal, with the natural rhythm of Indian English storytelling.",
-    # Dadi Maa and Mamie Claire use Voice Cloning (IVC) — see comments below
     "dadi":      "A warm, loving Hindi grandmother voice, slow and full of love. Gentle and maternal, like a real dadi telling bedtime stories.",
     "rajvikram": "A warm, regal Tamil king voice, deep and kind. Full of storytelling energy, gentle despite the royal bearing.",
-    "naInai":    "A gentle, wise Chinese grandfather voice. Warm and full of wonder, like a grandfather telling ancient tales to beloved grandchildren.",
-    "abuela":    "A warm, expressive Spanish grandfather voice. Full of life, bursting with storytelling passion and love for children.",
-    "mamie":     "A warm, gentle French grandmother voice. Charming and cosy, like a real mamie telling stories by the fireplace.",
 }
 
 # Agent tool definitions — registered in conversation_config.agent.prompt.tools
