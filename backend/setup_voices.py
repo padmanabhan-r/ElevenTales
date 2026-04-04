@@ -91,7 +91,7 @@ AGENT_TOOLS = [
     {
         "type": "client",
         "name": "award_badge",
-        "description": "Award a creativity badge silently. Call when child contributes any creative idea. Max 2 per session.",
+        "description": "Award a creativity badge silently. Call when child contributes any creative idea. Max 3 per session.",
         "parameters": {
             "type": "object",
             "properties": {
@@ -143,9 +143,8 @@ def create_agent(char_id: str, char_name: str, voice_id: str, extra_prompt: str,
     """Create an ElevenLabs Conversational AI agent. Returns agent_id."""
     print(f"  [{char_id}] Creating agent...")
     system_prompt = SYSTEM_PROMPT_BASE.format(name=char_name) + extra_prompt
-    # eleven_flash_v2 = English only; eleven_multilingual_v2 = multilingual
-    # eleven_v3_conversational = more expressive but currently in alpha
-    tts_model = "eleven_flash_v2" if language == "English" else "eleven_multilingual_v2"
+    # eleven_v3_conversational = English, expressive; eleven_multilingual_v2 = multilingual
+    tts_model = "eleven_v3_conversational" if language == "English" else "eleven_multilingual_v2"
     lang_code = _LANG_CODE.get(language, "en")
 
     agent = CLIENT.conversational_ai.agents.create(
