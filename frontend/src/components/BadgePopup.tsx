@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { motion } from "framer-motion";
-import type { BadgeAward } from "@/hooks/useLiveAPI";
+import type { BadgeAward } from "@/hooks/useConversation";
 
 interface Props {
   badge: BadgeAward;
