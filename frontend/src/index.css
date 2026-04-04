@@ -15,14 +15,14 @@
     --popover: 20 65% 18%;
     --popover-foreground: 45 100% 96%;
 
-    --primary: 45 100% 65%;
-    --primary-foreground: 20 65% 15%;
+    --primary: 0 0% 100%;
+    --primary-foreground: 22 70% 22%;
 
-    --secondary: 280 60% 70%;
-    --secondary-foreground: 45 100% 96%;
+    --secondary: 280 60% 80%;
+    --secondary-foreground: 20 65% 15%;
 
     --muted: 22 50% 24%;
-    --muted-foreground: 32 25% 75%;
+    --muted-foreground: 35 40% 82%;
 
     --accent: 170 70% 50%;
     --accent-foreground: 20 65% 15%;
@@ -32,14 +32,14 @@
 
     --border: 24 42% 32%;
     --input: 24 42% 32%;
-    --ring: 45 100% 65%;
+    --ring: 0 0% 100%;
 
     --radius: 1rem;
 
     /* ElevenTales design tokens */
     --sky-top: 22 82% 32%;
     --sky-bottom: 35 95% 60%;
-    --star-glow: 45 100% 78%;
+    --star-glow: 45 100% 88%;
     --magic-pink: 330 80% 68%;
     --magic-teal: 170 70% 52%;
     --magic-orange: 28 100% 62%;
