@@ -26,7 +26,7 @@ const LandingPage = ({ onStoryMode }: Props) => {
       {/* Background */}
       <div className="absolute inset-0">
         <img src={heroBg} alt="Magical night sky" className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-background/50" />
+        <div className="absolute inset-0 bg-background/15" />
       </div>
 
       <FloatingElements />
