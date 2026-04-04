@@ -6,45 +6,45 @@
 
 @layer base {
   :root {
-    --background: 24 72% 30%;
+    --background: 232 47% 13%;
     --foreground: 45 100% 96%;
 
-    --card: 20 65% 18%;
+    --card: 232 40% 18%;
     --card-foreground: 45 100% 96%;
 
-    --popover: 20 65% 18%;
+    --popover: 232 40% 18%;
     --popover-foreground: 45 100% 96%;
 
-    --primary: 38 90% 90%;
-    --primary-foreground: 22 70% 22%;
+    --primary: 42 100% 62%;
+    --primary-foreground: 232 47% 13%;
 
-    --secondary: 280 60% 80%;
-    --secondary-foreground: 20 65% 15%;
+    --secondary: 280 60% 65%;
+    --secondary-foreground: 45 100% 96%;
 
-    --muted: 22 50% 24%;
-    --muted-foreground: 35 40% 82%;
+    --muted: 232 30% 25%;
+    --muted-foreground: 230 20% 65%;
 
     --accent: 170 70% 50%;
-    --accent-foreground: 20 65% 15%;
+    --accent-foreground: 232 47% 13%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 24 42% 32%;
-    --input: 24 42% 32%;
-    --ring: 0 0% 100%;
+    --border: 232 30% 28%;
+    --input: 232 30% 28%;
+    --ring: 42 100% 62%;
 
     --radius: 1rem;
 
     /* ElevenTales design tokens */
-    --sky-top: 22 82% 32%;
-    --sky-bottom: 35 95% 60%;
-    --star-glow: 45 100% 88%;
-    --magic-pink: 330 80% 68%;
-    --magic-teal: 170 70% 52%;
-    --magic-orange: 28 100% 62%;
-    --cloud: 35 60% 88%;
-    --sparkle: 50 100% 82%;
+    --sky-top: 250 60% 12%;
+    --sky-bottom: 232 47% 20%;
+    --star-glow: 42 100% 75%;
+    --magic-pink: 330 80% 65%;
+    --magic-teal: 170 70% 50%;
+    --magic-orange: 25 95% 60%;
+    --cloud: 230 30% 85%;
+    --sparkle: 50 100% 80%;
   }
 }
 
