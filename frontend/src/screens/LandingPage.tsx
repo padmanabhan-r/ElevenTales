@@ -6,7 +6,7 @@ import PastAdventuresModal from "@/components/PastAdventuresModal";
 
 function hasPastStories(): boolean {
   try {
-    const entries = JSON.parse(localStorage.getItem("storyforge_gallery") ?? "[]");
+    const entries = JSON.parse(localStorage.getItem("eleventales_gallery") ?? "[]");
     return Array.isArray(entries) && entries.length > 0;
   } catch {
     return false;
@@ -68,7 +68,7 @@ const LandingPage = ({ onStoryMode }: Props) => {
             transition={{ duration: 0.8, delay: 0.3 }}
             className="font-display text-6xl sm:text-7xl md:text-8xl font-extrabold text-primary drop-shadow-lg mb-3"
           >
-            StoryForge
+            ElevenTales
           </motion.h1>
 
           <motion.p
