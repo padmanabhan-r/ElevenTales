@@ -112,8 +112,8 @@ export function useConversation({
       }
       const { signed_url } = await res.json();
       const themeLabel =
-        theme === "camera_prop" ? "your special prop" :
-        theme === "sketch"      ? "your drawing" :
+        theme === "camera_prop" ? (propDescription ?? "your special prop") :
+        theme === "sketch"      ? (propDescription ?? "your drawing") :
         theme                   ?? "a wonderful adventure";
       await elevenLabs.startSession({
         signedUrl: signed_url,
