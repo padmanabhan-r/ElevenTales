@@ -80,7 +80,7 @@ async function saveToGallery(
 
   try {
     const existing: StoryGalleryEntry[] = JSON.parse(
-      localStorage.getItem("storyforge_gallery") ?? "[]"
+      localStorage.getItem("eleventales_gallery") ?? "[]"
     );
     const prev = existing.find((e) => e.id === sessionId);
     const entry: StoryGalleryEntry = {
@@ -99,32 +99,32 @@ async function saveToGallery(
     };
     const updated = [entry, ...existing.filter((e) => e.id !== sessionId)].slice(0, 5);
     try {
-      localStorage.setItem("storyforge_gallery", JSON.stringify(updated));
+      localStorage.setItem("eleventales_gallery", JSON.stringify(updated));
     } catch {
       // Quota exceeded — evict the oldest story and retry once
       const trimmed = updated.slice(0, updated.length - 1);
       try {
-        localStorage.setItem("storyforge_gallery", JSON.stringify(trimmed));
+        localStorage.setItem("eleventales_gallery", JSON.stringify(trimmed));
       } catch {
         // Still failing — clear the gallery entirely to recover
-        localStorage.removeItem("storyforge_gallery");
+        localStorage.removeItem("eleventales_gallery");
       }
     }
   } catch (e) {
     // Outer try covers JSON.parse failure on corrupt data
-    try { localStorage.removeItem("storyforge_gallery"); } catch { /* ignore */ }
+    try { localStorage.removeItem("eleventales_gallery"); } catch { /* ignore */ }
   }
 }
 
 function updateGalleryEntry(sessionId: string, patch: Partial<StoryGalleryEntry>) {
   try {
     const existing: StoryGalleryEntry[] = JSON.parse(
-      localStorage.getItem("storyforge_gallery") ?? "[]"
+      localStorage.getItem("eleventales_gallery") ?? "[]"
     );
     const updated = existing.map((e) =>
       e.id === sessionId ? { ...e, ...patch } : e
     );
-    localStorage.setItem("storyforge_gallery", JSON.stringify(updated));
+    localStorage.setItem("eleventales_gallery", JSON.stringify(updated));
   } catch {
     // localStorage unavailable — ignore
   }
@@ -381,7 +381,7 @@ const StoryScreen = ({ character, theme, propImage, propDescription, propImageMi
               Home
             </button>
           </div>
-          <h1 className="font-display text-lg sm:text-xl font-bold text-primary">StoryForge</h1>
+          <h1 className="font-display text-lg sm:text-xl font-bold text-primary">ElevenTales</h1>
           <div className="flex items-center justify-end gap-3 flex-shrink-0">
             {theme && theme !== "camera_prop" && theme !== "sketch" && (
               <span className="whitespace-nowrap px-3 py-1 rounded-full bg-primary/20 border border-primary/30 font-body text-xs text-primary">

@@ -125,7 +125,7 @@ def create_voice(char_id: str, char_name: str) -> str:
 
     # Step 2: Save as permanent voice
     voice = CLIENT.text_to_voice.create(
-        voice_name=f"StoryForge — {char_name}",
+        voice_name=f"ElevenTales — {char_name}",
         voice_description=desc,
         generated_voice_id=generated_voice_id,
     )
@@ -149,7 +149,7 @@ def create_agent(char_id: str, char_name: str, voice_id: str, extra_prompt: str,
     lang_code = _LANG_CODE.get(language, "en")
 
     agent = CLIENT.conversational_ai.agents.create(
-        name=f"StoryForge - {char_name}",
+        name=f"ElevenTales - {char_name}",
         conversation_config={
             "agent": {
                 "prompt": {
@@ -184,7 +184,7 @@ def create_agent(char_id: str, char_name: str, voice_id: str, extra_prompt: str,
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Create ElevenLabs voices + agents for StoryForge characters.")
+    parser = argparse.ArgumentParser(description="Create ElevenLabs voices + agents for ElevenTales characters.")
     parser.add_argument(
         "--char",
         metavar="CHARACTER_ID",

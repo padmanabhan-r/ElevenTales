@@ -541,7 +541,7 @@ const ThemeSelect = ({ character, onBack, onHome, onConfirm }: Props) => {
               Home
             </button>
           </div>
-          <h1 className="font-display text-lg sm:text-xl font-bold text-primary">StoryForge</h1>
+          <h1 className="font-display text-lg sm:text-xl font-bold text-primary">ElevenTales</h1>
           {/* Character chip */}
           <div className="flex-1 flex items-center justify-end gap-3">
             <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-primary/50 flex-shrink-0">

@@ -1,5 +1,5 @@
 # backend/main.py
-"""StoryForge FastAPI backend — session token issuer + image generation."""
+"""ElevenTales FastAPI backend — session token issuer + image generation."""
 
 import os
 from pathlib import Path
@@ -16,7 +16,7 @@ from image_gen import router as image_router
 from session import get_session_url
 from characters import get_character
 
-app = FastAPI(title="StoryForge Backend")
+app = FastAPI(title="ElevenTales Backend")
 
 app.add_middleware(
     CORSMiddleware,
