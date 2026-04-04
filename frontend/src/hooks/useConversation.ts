@@ -31,6 +31,7 @@ interface UseConversationOptions {
 export function useConversation({
   character,
   theme,
+  propDescription,
   onGenerateIllustration,
   onBadgeAwarded,
   onTranscription,
