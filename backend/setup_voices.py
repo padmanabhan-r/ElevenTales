@@ -37,19 +37,34 @@ SAMPLE_TEXT = (
     "something extraordinary was about to happen! Come, let me tell you the most wonderful story!"
 )
 
-# Voice Design descriptions per character
+# Voice Design descriptions per character — ElevenLabs recommended format:
+# "Native <Language>. <Gender>, <Age>. <Quality>. Persona: <2–5 words>. Emotion: <2–3 adjectives>. <1–2 sentences timbre + pacing>"
 VOICE_DESCRIPTIONS: dict[str, str] = {
-    "wizard":    "A warm, wise, wonderfully playful wizard with a rich, deep baritone voice, full of mystery and theatrical flair. British-inflected, ancient but warm.",
-    "fairy":     "A light, musical, airy soprano voice, like wind chimes and laughter together. Warm, kind, gently whimsical — a fairy storyteller.",
-    "pirate":    "A bold, energetic pirate captain voice, full of life and sea spray. Warm heart behind the boisterous exterior. Fun for children.",
-    "robot":     "A cheerful, clearly male synthetic voice with a warm robotic affect. Upbeat, curious, enthusiastic — a friendly male robot storyteller for children.",
-    "rajkumari": "A melodious, gentle Indian English voice with musical cadence. Warm and regal, with the natural rhythm of Indian English storytelling.",
-    # Dadi Maa and Mamie Claire use Voice Cloning (IVC) — see comments below
-    "dadi":      "A warm, loving Hindi grandmother voice, slow and full of love. Gentle and maternal, like a real dadi telling bedtime stories.",
-    "rajvikram": "A warm, regal Tamil king voice, deep and kind. Full of storytelling energy, gentle despite the royal bearing.",
-    "naInai":    "A gentle, wise Chinese grandfather voice. Warm and full of wonder, like a grandfather telling ancient tales to beloved grandchildren.",
-    "abuela":    "A warm, expressive Spanish grandfather voice. Full of life, bursting with storytelling passion and love for children.",
-    "mamie":     "A warm, gentle French grandmother voice. Charming and cosy, like a real mamie telling stories by the fireplace.",
+    "wizard": (
+        "Native British English. Male, elder (60s–70s). Studio quality. "
+        "Persona: ancient wizard, warm grandfather. Emotion: playful, wise, warm. "
+        "Rich, full baritone with natural theatrical resonance; measured and deliberate for mysterious moments, brighter and faster when the magic crackles."
+    ),
+    "fairy": (
+        "Native British English. Female, young adult (20s). Studio quality. "
+        "Persona: whimsical fairy storyteller. Emotion: warm, delighted, magical. "
+        "Light soprano voice with an airy, breathy quality and natural musical lilt; pacing varies from slow hushed near-whispers at magical reveals to bright and quick with excitement."
+    ),
+    "pirate": (
+        "Native English. Female, adult (30s). Studio quality. "
+        "Persona: bold, warm-hearted pirate captain. Emotion: energetic, brave, joyful. "
+        "Clear mid-range voice with bold, punchy delivery and natural forward momentum; slows to wonder at discoveries, speeds up with the thrill of adventure."
+    ),
+    "dadi": (
+        "Native Hindi. Female, elder (60s–70s). Studio quality. "
+        "Persona: loving Indian grandmother. Emotion: warm, gentle, maternal. "
+        "Soft mid-range voice with slow, deliberate pacing and natural age in the warmth; rises softly with delight and lowers warmly for mystery, never rushing."
+    ),
+    "rajvikram": (
+        "Native Tamil. Male, adult (40s–50s). Studio quality. "
+        "Persona: regal, kind Tamil king. Emotion: warm, dignified, gentle. "
+        "Deep baritone with clear resonance and natural Tamil cadence; measured and confident delivery that slows for wisdom and mystery, brightens with storytelling energy."
+    ),
 }
 
 # Agent tool definitions — registered in conversation_config.agent.prompt.tools
@@ -76,7 +91,7 @@ AGENT_TOOLS = [
     {
         "type": "client",
         "name": "award_badge",
-        "description": "Award a creativity badge silently. Call when child contributes any creative idea. Max 2 per session.",
+        "description": "Award a creativity badge silently. Call when child contributes any creative idea. Max 3 per session.",
         "parameters": {
             "type": "object",
             "properties": {
@@ -110,7 +125,7 @@ def create_voice(char_id: str, char_name: str) -> str:
 
     # Step 2: Save as permanent voice
     voice = CLIENT.text_to_voice.create(
-        voice_name=f"StoryForge — {char_name}",
+        voice_name=f"ElevenTales — {char_name}",
         voice_description=desc,
         generated_voice_id=generated_voice_id,
     )
@@ -128,30 +143,37 @@ def create_agent(char_id: str, char_name: str, voice_id: str, extra_prompt: str,
     """Create an ElevenLabs Conversational AI agent. Returns agent_id."""
     print(f"  [{char_id}] Creating agent...")
     system_prompt = SYSTEM_PROMPT_BASE.format(name=char_name) + extra_prompt
-    # eleven_flash_v2 = English only; eleven_multilingual_v2 = multilingual
-    # eleven_v3_conversational = more expressive but currently in alpha
-    tts_model = "eleven_flash_v2" if language == "English" else "eleven_multilingual_v2"
+    # eleven_v3_conversational = English, expressive; eleven_multilingual_v2 = multilingual
+    tts_model = "eleven_v3_conversational" if language == "English" else "eleven_multilingual_v2"
     lang_code = _LANG_CODE.get(language, "en")
 
     agent = CLIENT.conversational_ai.agents.create(
-        name=f"StoryForge - {char_name}",
+        name=f"ElevenTales - {char_name}",
         conversation_config={
             "agent": {
                 "prompt": {
                     "prompt": system_prompt,
                     "llm": "gemini-2.5-flash",
+                    "temperature": 0.0,
+                    "tools": AGENT_TOOLS,
                 },
                 "first_message": first_message,
                 "dynamic_variable_placeholders": {"theme": "a wonderful adventure"},
-                "tools": AGENT_TOOLS,
             },
             "tts": {
                 "voice_id": voice_id,
                 "model_id": tts_model,
                 "language": lang_code,
+                "stability": 0.5,
+                "speed": 1.0,
+                "similarity_boost": 0.8,
+                "optimize_streaming_latency": 3,
             },
             "stt": {
                 "user_input_audio_format": "pcm_16000",
+            },
+            "turn": {
+                "turn_timeout": 7.0,
             },
         },
         platform_settings={"auth": {"enable_auth": True}},
@@ -161,7 +183,7 @@ def create_agent(char_id: str, char_name: str, voice_id: str, extra_prompt: str,
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Create ElevenLabs voices + agents for StoryForge characters.")
+    parser = argparse.ArgumentParser(description="Create ElevenLabs voices + agents for ElevenTales characters.")
     parser.add_argument(
         "--char",
         metavar="CHARACTER_ID",

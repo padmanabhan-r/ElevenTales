@@ -36,7 +36,7 @@ export interface StoryGalleryEntry {
 function resizeImageForStorage(
   imageData: string,
   mimeType: string,
-  maxWidth = 800,
+  maxWidth = 400,
 ): Promise<{ imageData: string; mimeType: string }> {
   return new Promise((resolve) => {
     const img = new Image();
@@ -65,9 +65,11 @@ async function saveToGallery(
   const loadedScenes = scenes.filter((s) => s.status === "loaded" && s.imageData);
   const rawImages = loadedScenes.map((s) => ({ imageData: s.imageData!, mimeType: s.mimeType! }));
 
-  const images = await Promise.all(
-    rawImages.map((img) => resizeImageForStorage(img.imageData, img.mimeType))
-  );
+  const images = (
+    await Promise.all(
+      rawImages.map((img) => resizeImageForStorage(img.imageData, img.mimeType))
+    )
+  ).slice(0, 6);
 
   // Store transcript text as narrations — avoids LLM calls in recap
   const narrations = loadedScenes.map((s) => s.description).filter(Boolean);
@@ -78,7 +80,7 @@ async function saveToGallery(
 
   try {
     const existing: StoryGalleryEntry[] = JSON.parse(
-      localStorage.getItem("storyforge_gallery") ?? "[]"
+      localStorage.getItem("eleventales_gallery") ?? "[]"
     );
     const prev = existing.find((e) => e.id === sessionId);
     const entry: StoryGalleryEntry = {
@@ -95,23 +97,34 @@ async function saveToGallery(
       badges,
       timestamp: prev?.timestamp ?? Date.now(),
     };
-    const updated = [entry, ...existing.filter((e) => e.id !== sessionId)].slice(0, 20);
-    localStorage.setItem("storyforge_gallery", JSON.stringify(updated));
-    console.log(`[gallery] Saved session ${sessionId} — ${images.length} thumbnails, ${updated.length} total stories`);
+    const updated = [entry, ...existing.filter((e) => e.id !== sessionId)].slice(0, 5);
+    try {
+      localStorage.setItem("eleventales_gallery", JSON.stringify(updated));
+    } catch {
+      // Quota exceeded — evict the oldest story and retry once
+      const trimmed = updated.slice(0, updated.length - 1);
+      try {
+        localStorage.setItem("eleventales_gallery", JSON.stringify(trimmed));
+      } catch {
+        // Still failing — clear the gallery entirely to recover
+        localStorage.removeItem("eleventales_gallery");
+      }
+    }
   } catch (e) {
-    console.warn("[gallery] localStorage save failed:", e);
+    // Outer try covers JSON.parse failure on corrupt data
+    try { localStorage.removeItem("eleventales_gallery"); } catch { /* ignore */ }
   }
 }
 
 function updateGalleryEntry(sessionId: string, patch: Partial<StoryGalleryEntry>) {
   try {
     const existing: StoryGalleryEntry[] = JSON.parse(
-      localStorage.getItem("storyforge_gallery") ?? "[]"
+      localStorage.getItem("eleventales_gallery") ?? "[]"
     );
     const updated = existing.map((e) =>
       e.id === sessionId ? { ...e, ...patch } : e
     );
-    localStorage.setItem("storyforge_gallery", JSON.stringify(updated));
+    localStorage.setItem("eleventales_gallery", JSON.stringify(updated));
   } catch {
     // localStorage unavailable — ignore
   }
@@ -254,8 +267,8 @@ const StoryScreen = ({ character, theme, propImage, propDescription, propImageMi
     theme,
     propImage,
     propDescription,
-    onImageTrigger: triggerImageGeneration,
     onGenerateIllustration: forceImageGeneration,
+    onImageTrigger: triggerImageGeneration,
     onTranscription: (msg) => {
       if (msg.type === "character" && !storyFirstLineRef.current) {
         storyFirstLineRef.current = msg.text;
@@ -368,7 +381,7 @@ const StoryScreen = ({ character, theme, propImage, propDescription, propImageMi
               Home
             </button>
           </div>
-          <h1 className="font-display text-lg sm:text-xl font-bold text-primary">StoryForge</h1>
+          <h1 className="font-display text-lg sm:text-xl font-bold text-primary">ElevenTales</h1>
           <div className="flex items-center justify-end gap-3 flex-shrink-0">
             {theme && theme !== "camera_prop" && theme !== "sketch" && (
               <span className="whitespace-nowrap px-3 py-1 rounded-full bg-primary/20 border border-primary/30 font-body text-xs text-primary">

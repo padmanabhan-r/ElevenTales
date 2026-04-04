@@ -16,7 +16,7 @@ function formatDate(ts: number): string {
 
 function loadGallery(): StoryGalleryEntry[] {
   try {
-    return JSON.parse(localStorage.getItem("storyforge_gallery") ?? "[]");
+    return JSON.parse(localStorage.getItem("eleventales_gallery") ?? "[]");
   } catch {
     return [];
   }
@@ -68,12 +68,12 @@ function StorybookView({
         // Persist so next open is instant
         try {
           const existing: StoryGalleryEntry[] = JSON.parse(
-            localStorage.getItem("storyforge_gallery") ?? "[]"
+            localStorage.getItem("eleventales_gallery") ?? "[]"
           );
           const updated = existing.map((e) =>
             e.id === entry.id ? { ...e, recapTitle: t || e.recapTitle, narrations: n } : e
           );
-          localStorage.setItem("storyforge_gallery", JSON.stringify(updated));
+          localStorage.setItem("eleventales_gallery", JSON.stringify(updated));
         } catch { /* quota — best effort */ }
       })
       .catch(() => setError("Couldn't create the storybook. Please try again!"))
@@ -300,13 +300,13 @@ export default function PastAdventuresModal({ onClose }: Props) {
   const [selected, setSelected] = useState<StoryGalleryEntry | null>(null);
 
   const handleClearAll = () => {
-    try { localStorage.removeItem("storyforge_gallery"); } catch { /* ignore */ }
+    try { localStorage.removeItem("eleventales_gallery"); } catch { /* ignore */ }
     setEntries([]);
   };
 
   const handleDeleteEntry = (id: string) => {
     const updated = entries.filter((e) => e.id !== id);
-    try { localStorage.setItem("storyforge_gallery", JSON.stringify(updated)); } catch { /* ignore */ }
+    try { localStorage.setItem("eleventales_gallery", JSON.stringify(updated)); } catch { /* ignore */ }
     setEntries(updated);
   };
 
