@@ -36,7 +36,7 @@ export interface StoryGalleryEntry {
 function resizeImageForStorage(
   imageData: string,
   mimeType: string,
-  maxWidth = 800,
+  maxWidth = 400,
 ): Promise<{ imageData: string; mimeType: string }> {
   return new Promise((resolve) => {
     const img = new Image();
@@ -65,9 +65,11 @@ async function saveToGallery(
   const loadedScenes = scenes.filter((s) => s.status === "loaded" && s.imageData);
   const rawImages = loadedScenes.map((s) => ({ imageData: s.imageData!, mimeType: s.mimeType! }));
 
-  const images = await Promise.all(
-    rawImages.map((img) => resizeImageForStorage(img.imageData, img.mimeType))
-  );
+  const images = (
+    await Promise.all(
+      rawImages.map((img) => resizeImageForStorage(img.imageData, img.mimeType))
+    )
+  ).slice(0, 6);
 
   // Store transcript text as narrations — avoids LLM calls in recap
   const narrations = loadedScenes.map((s) => s.description).filter(Boolean);
@@ -95,11 +97,22 @@ async function saveToGallery(
       badges,
       timestamp: prev?.timestamp ?? Date.now(),
     };
-    const updated = [entry, ...existing.filter((e) => e.id !== sessionId)].slice(0, 20);
-    localStorage.setItem("storyforge_gallery", JSON.stringify(updated));
-    console.log(`[gallery] Saved session ${sessionId} — ${images.length} thumbnails, ${updated.length} total stories`);
+    const updated = [entry, ...existing.filter((e) => e.id !== sessionId)].slice(0, 5);
+    try {
+      localStorage.setItem("storyforge_gallery", JSON.stringify(updated));
+    } catch {
+      // Quota exceeded — evict the oldest story and retry once
+      const trimmed = updated.slice(0, updated.length - 1);
+      try {
+        localStorage.setItem("storyforge_gallery", JSON.stringify(trimmed));
+      } catch {
+        // Still failing — clear the gallery entirely to recover
+        localStorage.removeItem("storyforge_gallery");
+      }
+    }
   } catch (e) {
-    console.warn("[gallery] localStorage save failed:", e);
+    // Outer try covers JSON.parse failure on corrupt data
+    try { localStorage.removeItem("storyforge_gallery"); } catch { /* ignore */ }
   }
 }
 
