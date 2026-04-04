@@ -17,6 +17,8 @@ export interface Character {
   firstMessage: string;
   imageStyle: string;
   category: "english" | "other";
+  /** True if this character uses a cloned voice (IVC). */
+  clonedVoice?: boolean;
 }
 
 export const CHARACTERS: Character[] = [
@@ -75,6 +77,7 @@ export const CHARACTERS: Character[] = [
     name: "Raja Vikram",
     language: "Tamil",
     tagline: "Tamil கதைகள்",
+    clonedVoice: true,
     description: "A brave and just Tamil king with tales of wisdom and courage",
     image: rajvikramImg,
     greeting: "வணக்கம்! இன்று நாம் ஒரு அற்புதமான கதை கேட்போம்!",

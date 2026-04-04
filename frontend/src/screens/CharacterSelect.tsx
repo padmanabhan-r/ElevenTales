@@ -50,7 +50,18 @@ const CharacterCard = ({
       <h3 className="font-display text-sm sm:text-base font-bold text-foreground leading-tight">
         {character.name}
       </h3>
-      <p className="text-xs text-muted-foreground mt-0.5">{character.language}</p>
+      <div className="flex items-center justify-center gap-1.5 mt-0.5">
+        <p className="text-xs text-muted-foreground">{character.language}</p>
+        {character.clonedVoice ? (
+          <span className="text-[10px] font-semibold font-body px-1.5 py-0.5 rounded-full bg-accent/20 text-accent border border-accent/30 leading-none">
+            cloned voice
+          </span>
+        ) : (
+          <span className="text-[10px] font-semibold font-body px-1.5 py-0.5 rounded-full bg-secondary/20 text-secondary border border-secondary/30 leading-none">
+            designed voice
+          </span>
+        )}
+      </div>
       <p className="text-xs text-primary/70 mt-1 italic leading-tight">{character.tagline}</p>
     </div>
   </motion.button>
@@ -109,6 +120,15 @@ const CharacterSelect = ({ onSelect, onBack }: Props) => {
               className="underline underline-offset-2 hover:text-muted-foreground transition-colors"
             >
               ElevenLabs Voice Design
+            </a>
+            {" "}and{" "}
+            <a
+              href="https://elevenlabs.io/docs/eleven-api/guides/how-to/voices/instant-voice-cloning"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline underline-offset-2 hover:text-muted-foreground transition-colors"
+            >
+              Voice Cloning
             </a>
           </p>
         </motion.div>
