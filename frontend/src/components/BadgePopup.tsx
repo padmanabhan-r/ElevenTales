@@ -14,12 +14,13 @@ const BadgePopup = ({ badge, onDismiss }: Props) => {
   }, [onDismiss]);
 
   return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
     <motion.div
       initial={{ opacity: 0, scale: 0.5 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.5 }}
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
-      className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 flex flex-col items-center gap-2 px-8 py-5 rounded-3xl bg-card border-2 border-primary shadow-2xl magic-glow"
+      className="pointer-events-auto flex flex-col items-center gap-2 px-8 py-5 rounded-3xl bg-card border-2 border-primary shadow-2xl magic-glow"
     >
       <motion.div
         animate={{ rotate: [0, -15, 15, -10, 10, 0], scale: [1, 1.3, 1] }}
@@ -37,6 +38,7 @@ const BadgePopup = ({ badge, onDismiss }: Props) => {
         Tap to close
       </button>
     </motion.div>
+    </div>
   );
 };
 
