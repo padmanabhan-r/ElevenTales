@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to StoryForge are documented here.
+All notable changes to ElevenTales are documented here.
 
 ---
 

@@ -688,7 +688,7 @@ wheels = [
 ]
 
 [[package]]
-name = "storyforge-backend"
+name = "eleventales-backend"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [

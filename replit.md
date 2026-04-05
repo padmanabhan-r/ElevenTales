@@ -1,4 +1,4 @@
-# ElevenTales / StoryForge
+# ElevenTales
 
 A voice-first interactive storytelling platform for children. Kids have real-time voice conversations with AI-driven story characters that narrate and dynamically illustrate adventures.
 
