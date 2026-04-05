@@ -21,7 +21,12 @@ app = FastAPI(title="ElevenTales Backend")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],   # Replit URL is dynamic; lock down after first deploy
+    allow_origins=[
+        "https://eleven-tales.replit.app",
+        "https://eleventales.replit.app",
+        "http://localhost:5173",
+        "http://localhost:8080",
+    ],
     allow_methods=["*"],
     allow_headers=["*"],
 )

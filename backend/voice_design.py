@@ -192,6 +192,9 @@ class CustomCharacterData(BaseModel):
 @router.post("/api/voice-design/preview", response_model=VoicePreviewResponse)
 async def generate_voice_previews(req: VoicePreviewRequest) -> VoicePreviewResponse:
     """Generate 3 voice preview samples from a text prompt."""
+    if not await _is_safe_for_children(req.voice_description):
+        raise HTTPException(status_code=400, detail="Voice description is not appropriate for a children's app.")
+
     client = _get_elevenlabs()
     try:
         result = client.text_to_voice.create_previews(
@@ -216,9 +219,20 @@ async def generate_voice_previews(req: VoicePreviewRequest) -> VoicePreviewRespo
     return VoicePreviewResponse(previews=previews)
 
 
+async def _is_safe_for_children(content: str) -> bool:
+    """Return True if the content is appropriate for a children's app."""
+    from image_gen import _is_safe_for_children as _img_safe
+    return await _img_safe(content)
+
+
 @router.post("/api/character/create", response_model=CustomCharacterData)
 async def create_custom_character(req: CharacterCreateRequest) -> CustomCharacterData:
     """Save voice, generate system prompt via Gemini, create ElevenLabs agent."""
+    # Moderate persona before embedding it in a system prompt
+    combined = f"{req.character_name}. {req.persona_description}"
+    if not await _is_safe_for_children(combined):
+        raise HTTPException(status_code=400, detail="Character description is not appropriate for a children's app.")
+
     client = _get_elevenlabs()
     safe_slug = req.character_name.lower().replace(" ", "_")[:20]
     char_id = f"custom_{safe_slug}_{int(time.time())}"
