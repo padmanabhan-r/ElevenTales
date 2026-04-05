@@ -4,11 +4,12 @@ import CharacterSelect from "./screens/CharacterSelect";
 import ThemeSelect from "./screens/ThemeSelect";
 import StoryScreen from "./screens/StoryScreen";
 import VoiceDesignScreen from "./screens/VoiceDesignScreen";
+import VoiceCloneScreen from "./screens/VoiceCloneScreen";
 import MuteButton from "./components/MuteButton";
 import { Character } from "./characters";
 import { useAmbientSound } from "./hooks/useAmbientSound";
 
-type Screen = "landing" | "story-select" | "voice-design" | "theme-select" | "story";
+type Screen = "landing" | "story-select" | "voice-design" | "voice-clone" | "theme-select" | "story";
 
 const App = () => {
   const [screen, setScreen] = useState<Screen>("landing");
@@ -64,6 +65,11 @@ const App = () => {
     setScreen("story-select");
   };
 
+  const handleVoiceCloneCreated = (character: Character) => {
+    setSessionCustomChars((prev) => [...prev, character]);
+    setScreen("story-select");
+  };
+
   return (
     <>
       {screen === "landing" && (
@@ -74,6 +80,7 @@ const App = () => {
           onSelect={handleCharacterSelect}
           onBack={handleBackToLanding}
           onVoiceDesign={() => setScreen("voice-design")}
+          onVoiceClone={() => setScreen("voice-clone")}
           customCharacters={sessionCustomChars}
         />
       )}
@@ -81,6 +88,12 @@ const App = () => {
         <VoiceDesignScreen
           onBack={() => setScreen("story-select")}
           onCreated={handleVoiceDesignCreated}
+        />
+      )}
+      {screen === "voice-clone" && (
+        <VoiceCloneScreen
+          onBack={() => setScreen("story-select")}
+          onCreated={handleVoiceCloneCreated}
         />
       )}
       {screen === "theme-select" && selectedCharacter && (
