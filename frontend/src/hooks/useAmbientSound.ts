@@ -80,7 +80,7 @@ export function useAmbientSound(active: boolean) {
     // Master gain — fade in over 2s
     const master = ctx.createGain();
     master.gain.setValueAtTime(0, ctx.currentTime);
-    master.gain.linearRampToValueAtTime(0.55, ctx.currentTime + 2.5);
+    master.gain.linearRampToValueAtTime(0.25, ctx.currentTime + 2.5);
     master.connect(ctx.destination);
     masterRef.current = master;
 
