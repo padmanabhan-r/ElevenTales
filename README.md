@@ -1,4 +1,4 @@
-# StoryForge
+# ElevenTales
 
 Voice-first interactive storytelling for kids. Children talk to AI story characters using their real voice — the characters respond in real-time with ElevenLabs Conversational AI, and scenes are illustrated on-the-fly with Gemini image generation.
 
@@ -107,7 +107,7 @@ Builds the frontend and starts FastAPI at `http://localhost:8080`.
 ## Project Structure
 
 ```
-StoryForge/
+ElevenTales/
 ├── frontend/               # React + Vite app
 │   └── src/
 │       ├── characters/     # Character definitions (frontend metadata)
