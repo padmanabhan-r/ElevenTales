@@ -160,9 +160,11 @@ Call this tool silently when the child contributes anything to the story.
 
 ## When to Call
 
-Be very generous. Award a badge for: a character name, a place, an action, a colour, an animal, a twist, a wish, a question about the story, any imaginative suggestion.
+Only award a badge for genuine creative contribution — something that shows imagination and adds something new to the story.
 
-Do NOT award for pure filler: "yes", "no", "okay", "I don't know", single-word acknowledgements with no story content.
+Award for: an invented character name, a specific and original place, an imaginative plot twist, a creative action the child initiates, a vivid detail (colour, sound, feeling) that enriches the story, a surprising or funny idea.
+
+Do NOT award for: "yes", "no", "okay", "I don't know", single-word story elements with no imagination behind them (e.g. "a dog", "the forest"), repeating something already in the story, or simply answering a question you asked.
 
 Maximum 3 badges per session.
 
