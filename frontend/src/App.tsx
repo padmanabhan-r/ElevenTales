@@ -22,8 +22,8 @@ const App = () => {
   // Custom characters created this session — passed down so they appear immediately
   const [sessionCustomChars, setSessionCustomChars] = useState<Character[]>([]);
 
-  // Ambient music plays on landing + character select, stops during story or when muted
-  useAmbientSound(screen !== "story" && !muted);
+  // Ambient music plays on landing + character select; stops during story, voice cloning, or when muted
+  useAmbientSound(screen !== "story" && screen !== "voice-clone" && !muted);
 
   const handleCharacterSelect = (character: Character) => {
     setSelectedCharacter(character);
