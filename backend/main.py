@@ -13,6 +13,7 @@ from pydantic import BaseModel
 load_dotenv()
 
 from image_gen import router as image_router
+from sfx import router as sfx_router
 from voice_design import router as voice_design_router
 from session import get_session_url
 from characters import get_character
@@ -21,12 +22,18 @@ app = FastAPI(title="ElevenTales Backend")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],   # Replit URL is dynamic; lock down after first deploy
+    allow_origins=[
+        "https://eleven-tales.replit.app",
+        "https://eleventales.replit.app",
+        "http://localhost:5173",
+        "http://localhost:8080",
+    ],
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 app.include_router(image_router)
+app.include_router(sfx_router)
 app.include_router(voice_design_router)
 
 

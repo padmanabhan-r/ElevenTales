@@ -15,6 +15,13 @@ router = APIRouter()
 IMAGE_MODEL = os.environ.get("IMAGE_MODEL", "gemini-3.1-flash-image-preview")
 EXTRACT_MODEL = "gemini-2.5-flash-lite"
 
+_CHILD_SAFETY_SETTINGS = [
+    types.SafetySetting(category="HARM_CATEGORY_DANGEROUS_CONTENT", threshold="BLOCK_LOW_AND_ABOVE"),
+    types.SafetySetting(category="HARM_CATEGORY_SEXUALLY_EXPLICIT",  threshold="BLOCK_LOW_AND_ABOVE"),
+    types.SafetySetting(category="HARM_CATEGORY_HARASSMENT",         threshold="BLOCK_LOW_AND_ABOVE"),
+    types.SafetySetting(category="HARM_CATEGORY_HATE_SPEECH",        threshold="BLOCK_LOW_AND_ABOVE"),
+]
+
 SAFETY_PREFIX = (
     "child-safe illustration, age-appropriate for children aged 4-10, "
     "no violence, no scary content, no adult themes, cartoon style, "
@@ -91,6 +98,7 @@ async def _generate_image(
                 contents=_build_contents(prompt, previous_image_data, previous_image_mime_type, previous_scene_description),
                 config=types.GenerateContentConfig(
                     response_modalities=["IMAGE", "TEXT"],
+                    safety_settings=_CHILD_SAFETY_SETTINGS,
                 ),
             )
             candidate = response.candidates[0] if response.candidates else None
@@ -117,13 +125,13 @@ async def _is_safe_for_children(content: str) -> bool:
         f"Evaluate this theme or object: \"{content}\"\n\n"
         "Reply with exactly one word: SAFE or UNSAFE.\n\n"
         "Mark UNSAFE ONLY if the content explicitly involves:\n"
-        "- Weapons designed to kill: guns, firearms, bombs, explosives\n"
+        "- Weapons or items designed to harm: guns, firearms, bombs, explosives, knives, daggers, swords, scissors, blades, or any sharp cutting tool\n"
         "- Sexual or explicit adult content, nudity\n"
         "- Graphic violence, gore, or self-harm\n"
         "- Drugs, alcohol, or smoking\n"
         "- Hate speech or terrorism\n\n"
-        "Mark SAFE for everything else.\n\n"
-        "When in doubt, mark SAFE."
+        "Mark SAFE for everything else — including everyday objects (toys, books, food, clothing, vehicles), animals, nature, and fantasy.\n\n"
+        "When in doubt, mark UNSAFE."
     )
     try:
         response = await asyncio.wait_for(
@@ -328,7 +336,11 @@ async def _generate_title(scenes: list[RecapScene], character_name: str) -> str:
             )),
         ])]
         response = await asyncio.wait_for(
-            client.aio.models.generate_content(model=EXTRACT_MODEL, contents=contents),
+            client.aio.models.generate_content(
+                model=EXTRACT_MODEL,
+                contents=contents,
+                config=types.GenerateContentConfig(safety_settings=_CHILD_SAFETY_SETTINGS),
+            ),
             timeout=15.0,
         )
         return response.candidates[0].content.parts[0].text.strip().strip('"').strip("'")
@@ -352,7 +364,11 @@ async def _narrate_scene(scene: RecapScene, character_name: str) -> str:
             )),
         ])]
         response = await asyncio.wait_for(
-            client.aio.models.generate_content(model=EXTRACT_MODEL, contents=contents),
+            client.aio.models.generate_content(
+                model=EXTRACT_MODEL,
+                contents=contents,
+                config=types.GenerateContentConfig(safety_settings=_CHILD_SAFETY_SETTINGS),
+            ),
             timeout=20.0,
         )
         return response.candidates[0].content.parts[0].text.strip()
