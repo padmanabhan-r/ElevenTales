@@ -9,7 +9,7 @@ interface Props {
   onCreated: (character: Character) => void;
 }
 
-type Step = "design" | "details" | "creating" | "done";
+type Step = "design" | "details" | "avatar" | "creating" | "done";
 
 interface PreviewItem {
   generated_voice_id: string;
@@ -20,24 +20,6 @@ const API_BASE = import.meta.env.VITE_API_URL ?? "";
 
 const LANGUAGES = ["English", "Hindi", "Tamil", "Spanish", "French", "Mandarin"];
 
-const EMOJI_GROUPS = [
-  {
-    label: "Fantasy & Magic",
-    emojis: ["🧚", "🧙", "🦄", "🐉", "🧜", "🧝", "🧞", "🪄", "⭐", "🌟", "✨", "🔮"],
-  },
-  {
-    label: "Animals",
-    emojis: ["🦁", "🐯", "🐻", "🦊", "🐺", "🦅", "🦋", "🐬", "🐙", "🦕", "🦖", "🐸", "🦗"],
-  },
-  {
-    label: "Adventure",
-    emojis: ["🏴‍☠️", "⚔️", "🚀", "🌊", "🏔️", "🗺️", "🎪", "🎠", "🌈", "🎭", "🎩", "🤠"],
-  },
-  {
-    label: "Nature & Space",
-    emojis: ["🌸", "🌻", "🍄", "🌙", "☀️", "🌍", "🌺", "🍀", "🦜", "🐝", "🌴", "🏝️"],
-  },
-];
 
 const DESIGN_PLACEHOLDER =
   `Native English. Female, young adult (20s). Studio quality.\nPersona: cheerful forest guardian. Emotion: warm, playful, curious.\nLight, airy voice with a gentle lilt; slows to a whisper at magical moments, quickens with excitement.`;
@@ -132,11 +114,14 @@ const VoiceDesignScreen = ({ onBack, onCreated }: Props) => {
 
   // Step 2: Character details
   const [charName, setCharName] = useState("");
-  const [emoji, setEmoji] = useState("");
   const [personaDesc, setPersonaDesc] = useState("");
   const [language, setLanguage] = useState("English");
 
-  const [emojiPanelOpen, setEmojiPanelOpen] = useState(true);
+  // Avatar preview
+  const [avatarData, setAvatarData] = useState("");
+  const [avatarMimeType, setAvatarMimeType] = useState("image/png");
+  const [loadingAvatar, setLoadingAvatar] = useState(false);
+  const [avatarError, setAvatarError] = useState("");
 
   const [step, setStep] = useState<Step>("design");
   const [createError, setCreateError] = useState("");
@@ -171,10 +156,37 @@ const VoiceDesignScreen = ({ onBack, onCreated }: Props) => {
     }
   };
 
+  // ── Avatar preview ─────────────────────────────────────────────────────────
+
+  const handleGenerateAvatar = async () => {
+    setAvatarError("");
+    setLoadingAvatar(true);
+    setAvatarData("");
+    try {
+      const res = await fetch(`${API_BASE}/api/character/avatar`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ character_name: charName.trim(), persona_description: personaDesc.trim() }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error((err as { detail?: string }).detail ?? "Avatar generation failed");
+      }
+      const data = await res.json();
+      setAvatarData(data.avatar_data);
+      setAvatarMimeType(data.avatar_mime_type || "image/png");
+      setStep("avatar");
+    } catch (e: unknown) {
+      setAvatarError(e instanceof Error ? e.message : "Something went wrong");
+    } finally {
+      setLoadingAvatar(false);
+    }
+  };
+
   // ── Step 2: Create character ───────────────────────────────────────────────
 
   const handleCreate = async () => {
-    if (!selectedPreviewId || !charName.trim() || !emoji.trim() || !personaDesc.trim()) return;
+    if (!selectedPreviewId || !charName.trim() || !personaDesc.trim()) return;
     setStep("creating");
     setCreateError("");
     const selectedPreview = previews.find((p) => p.generated_voice_id === selectedPreviewId)!;
@@ -187,9 +199,10 @@ const VoiceDesignScreen = ({ onBack, onCreated }: Props) => {
           generated_voice_id: selectedPreview.generated_voice_id,
           voice_description: voiceDesc,
           character_name: charName.trim(),
-          emoji: emoji.trim(),
           persona_description: personaDesc.trim(),
           language,
+          avatar_data: avatarData,
+          avatar_mime_type: avatarMimeType,
         }),
       });
       if (!res.ok) {
@@ -204,7 +217,9 @@ const VoiceDesignScreen = ({ onBack, onCreated }: Props) => {
         language: data.language,
         tagline: data.tagline,
         description: personaDesc.trim(),
-        image: "",
+        image: data.avatar_data
+          ? `data:${data.avatar_mime_type || "image/png"};base64,${data.avatar_data}`
+          : "",
         emoji: data.emoji,
         greeting: `Hello! I'm ${data.name}!`,
         firstMessage: data.first_message,
@@ -254,27 +269,26 @@ const VoiceDesignScreen = ({ onBack, onCreated }: Props) => {
 
         {/* Step indicator */}
         <div className="flex items-center gap-2">
-          {(["design", "details"] as const).map((s, i) => (
-            <div key={s} className="flex items-center gap-2">
-              <div
-                className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold font-display transition-colors ${
-                  step === s
-                    ? "bg-primary text-white"
-                    : step === "details" && s === "design"
-                    ? "bg-primary/30 text-primary"
-                    : step === "creating" || step === "done"
-                    ? "bg-primary/30 text-primary"
-                    : "bg-muted/50 text-muted-foreground"
-                }`}
-              >
-                {step === "creating" || step === "done" ? "✓" : i + 1}
+          {(["design", "details", "avatar"] as const).map((s, i) => {
+            const order = ["design", "details", "avatar", "creating", "done"];
+            const currentIdx = order.indexOf(step);
+            const stepIdx = order.indexOf(s);
+            const isDone = currentIdx > stepIdx;
+            const isActive = step === s;
+            return (
+              <div key={s} className="flex items-center gap-2">
+                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold font-display transition-colors ${
+                  isDone ? "bg-primary/30 text-primary" : isActive ? "bg-primary text-white" : "bg-muted/50 text-muted-foreground"
+                }`}>
+                  {isDone ? "✓" : i + 1}
+                </div>
+                <span className="text-xs text-muted-foreground font-body hidden sm:inline">
+                  {s === "design" ? "Voice Design" : s === "details" ? "Details" : "Avatar"}
+                </span>
+                {i < 2 && <div className="flex-1 h-px bg-border/50 w-6" />}
               </div>
-              <span className="text-xs text-muted-foreground font-body hidden sm:inline">
-                {s === "design" ? "Voice Design" : "Character Details"}
-              </span>
-              {i === 0 && <div className="flex-1 h-px bg-border/50 w-6" />}
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         <AnimatePresence mode="wait">
@@ -426,68 +440,6 @@ const VoiceDesignScreen = ({ onBack, onCreated }: Props) => {
                 />
               </div>
 
-              {/* Emoji */}
-              <div className="flex flex-col gap-1.5">
-                <button
-                  type="button"
-                  onClick={() => setEmojiPanelOpen((o) => !o)}
-                  className="flex items-center justify-between w-full text-left"
-                >
-                  <label className="font-display text-sm font-bold text-foreground pointer-events-none">
-                    Character Icon <span className="text-destructive">*</span>
-                  </label>
-                  <div className="flex items-center gap-2">
-                    {emoji && (
-                      <div className="w-8 h-8 rounded-full bg-primary/10 border-2 border-primary/30 flex items-center justify-center text-xl">
-                        {emoji}
-                      </div>
-                    )}
-                    <span className="text-muted-foreground text-sm">
-                      {emojiPanelOpen ? "▲" : "▼"}
-                    </span>
-                  </div>
-                </button>
-
-                <AnimatePresence initial={false}>
-                  {emojiPanelOpen && (
-                    <motion.div
-                      key="emoji-panel"
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      exit={{ opacity: 0, height: 0 }}
-                      transition={{ duration: 0.2 }}
-                      className="overflow-hidden"
-                    >
-                      <div className="rounded-xl border border-border/60 bg-card/80 p-2.5">
-                        {EMOJI_GROUPS.map((group) => (
-                          <div key={group.label} className="mb-2 last:mb-0">
-                            <p className="text-[10px] font-bold font-display text-muted-foreground uppercase tracking-wide mb-1.5 px-0.5">
-                              {group.label}
-                            </p>
-                            <div className="flex flex-wrap gap-1">
-                              {group.emojis.map((e) => (
-                                <button
-                                  key={e}
-                                  type="button"
-                                  onClick={() => { setEmoji(e); setEmojiPanelOpen(false); }}
-                                  className={`w-9 h-9 rounded-lg text-xl flex items-center justify-center transition-all ${
-                                    emoji === e
-                                      ? "bg-primary/20 border-2 border-primary scale-110"
-                                      : "hover:bg-muted/60 border-2 border-transparent"
-                                  }`}
-                                >
-                                  {e}
-                                </button>
-                              ))}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-
               {/* Language */}
               <div className="flex flex-col gap-1.5">
                 <label className="font-display text-sm font-bold text-foreground">
@@ -521,24 +473,66 @@ const VoiceDesignScreen = ({ onBack, onCreated }: Props) => {
                 />
               </div>
 
-              {createError && (
-                <p className="text-sm text-destructive font-body text-center">{createError}</p>
+              {avatarError && (
+                <p className="text-sm text-destructive font-body text-center">{avatarError}</p>
               )}
 
               <div className="flex gap-3">
-                <button
-                  onClick={() => setStep("design")}
-                  className="flex-1 py-3 rounded-2xl border border-border/60 text-foreground font-display font-bold text-sm transition-colors hover:bg-card/80"
-                >
+                <button onClick={() => setStep("design")} className="flex-1 py-3 rounded-2xl border border-border/60 text-foreground font-display font-bold text-sm transition-colors hover:bg-card/80">
                   ← Back
                 </button>
-                <motion.button
-                  whileTap={{ scale: 0.97 }}
-                  disabled={!charName.trim() || !emoji.trim() || !personaDesc.trim()}
-                  onClick={handleCreate}
-                  className="flex-[2] py-3 rounded-2xl bg-primary text-white font-display font-bold text-base disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-md"
-                >
-                  ✨ Create My Storyteller
+                <motion.button whileTap={{ scale: 0.97 }} disabled={!charName.trim() || !personaDesc.trim() || loadingAvatar} onClick={handleGenerateAvatar}
+                  className="flex-[2] py-3 rounded-2xl bg-primary text-white font-display font-bold text-base disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-md">
+                  {loadingAvatar ? "🎨 Generating…" : "🎨 Generate Avatar →"}
+                </motion.button>
+              </div>
+              <button disabled={!charName.trim() || !personaDesc.trim()} onClick={handleCreate}
+                className="w-full text-xs text-muted-foreground hover:text-foreground font-body underline underline-offset-2 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+                Skip, create without avatar
+              </button>
+            </motion.div>
+          )}
+
+          {/* ── STEP 3: Avatar Preview ── */}
+          {step === "avatar" && (
+            <motion.div
+              key="avatar"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className="flex flex-col items-center gap-5"
+            >
+              <div className="text-center">
+                <h2 className="font-display text-lg font-bold text-foreground mb-1">Your character's portrait</h2>
+                <p className="text-sm text-muted-foreground font-body">Not happy with it? Regenerate as many times as you like.</p>
+              </div>
+
+              {avatarData ? (
+                <motion.img
+                  key={avatarData}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  src={`data:${avatarMimeType};base64,${avatarData}`}
+                  alt={charName}
+                  className="w-48 h-48 rounded-3xl object-cover shadow-lg border-4 border-primary/20"
+                />
+              ) : (
+                <div className="w-48 h-48 rounded-3xl bg-muted/30 border border-border/40" />
+              )}
+
+              {avatarError && <p className="text-sm text-destructive font-body">{avatarError}</p>}
+
+              <div className="flex gap-3 w-full">
+                <button onClick={() => setStep("details")} className="flex-1 py-3 rounded-2xl border border-border/60 text-foreground font-display font-bold text-sm transition-colors hover:bg-card/80">
+                  ← Back
+                </button>
+                <motion.button whileTap={{ scale: 0.97 }} disabled={loadingAvatar} onClick={handleGenerateAvatar}
+                  className="flex-1 py-3 rounded-2xl border border-primary/40 text-primary font-display font-bold text-sm disabled:opacity-40 transition-all hover:bg-primary/10">
+                  {loadingAvatar ? "Generating…" : "🔄 Regenerate"}
+                </motion.button>
+                <motion.button whileTap={{ scale: 0.97 }} disabled={loadingAvatar} onClick={handleCreate}
+                  className="flex-[2] py-3 rounded-2xl bg-primary text-white font-display font-bold text-base disabled:opacity-40 disabled:cursor-not-allowed shadow-md">
+                  ✨ Create!
                 </motion.button>
               </div>
             </motion.div>
@@ -579,13 +573,12 @@ const VoiceDesignScreen = ({ onBack, onCreated }: Props) => {
               animate={{ opacity: 1, scale: 1 }}
               className="flex flex-col items-center gap-6 py-12 text-center"
             >
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: [0, 1.3, 1] }}
-                transition={{ duration: 0.6 }}
-                className="w-24 h-24 rounded-full bg-primary/10 border-4 border-primary/30 flex items-center justify-center text-5xl"
-              >
-                {emoji}
+              <motion.div initial={{ scale: 0 }} animate={{ scale: [0, 1.3, 1] }} transition={{ duration: 0.6 }}
+                className="w-24 h-24 rounded-full overflow-hidden border-4 border-primary/30 bg-primary/10 flex items-center justify-center">
+                {avatarData
+                  ? <img src={`data:${avatarMimeType};base64,${avatarData}`} alt={charName} className="w-full h-full object-cover" />
+                  : <span className="text-4xl">✨</span>
+                }
               </motion.div>
               <div>
                 <h2 className="font-display text-2xl font-bold text-primary mb-1">

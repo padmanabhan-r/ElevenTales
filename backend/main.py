@@ -15,6 +15,7 @@ load_dotenv()
 from image_gen import router as image_router
 from sfx import router as sfx_router
 from voice_design import router as voice_design_router
+from voice_clone import router as voice_clone_router
 from session import get_session_url
 from characters import get_character
 
@@ -35,6 +36,7 @@ app.add_middleware(
 app.include_router(image_router)
 app.include_router(sfx_router)
 app.include_router(voice_design_router)
+app.include_router(voice_clone_router)
 
 
 # ── Health ────────────────────────────────────────────────────────────────────

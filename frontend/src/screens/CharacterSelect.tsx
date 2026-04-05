@@ -8,6 +8,7 @@ interface Props {
   onSelect: (character: Character) => void;
   onBack?: () => void;
   onVoiceDesign?: () => void;
+  onVoiceClone?: () => void;
   customCharacters?: Character[];
 }
 
@@ -53,11 +54,11 @@ const CharacterCard = ({
       animate={selected ? { scale: [1, 1.05, 1] } : {}}
       transition={{ duration: 0.6, repeat: selected ? Infinity : 0 }}
     >
-      {character.emoji ? (
-        <span className="text-4xl sm:text-5xl">{character.emoji}</span>
-      ) : (
+      {character.image ? (
         <img src={character.image} alt={character.name} className="w-full h-full object-cover" />
-      )}
+      ) : character.emoji ? (
+        <span className="text-4xl sm:text-5xl">{character.emoji}</span>
+      ) : null}
     </motion.div>
     <div className="text-center">
       <h3 className="font-display text-sm sm:text-base font-bold text-foreground leading-tight">
@@ -86,7 +87,7 @@ const CharacterCard = ({
 
 // ── Main component ─────────────────────────────────────────────────────────────
 
-const CharacterSelect = ({ onSelect, onBack, onVoiceDesign, customCharacters: propCustomChars }: Props) => {
+const CharacterSelect = ({ onSelect, onBack, onVoiceDesign, onVoiceClone, customCharacters: propCustomChars }: Props) => {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [apiChars, setApiChars] = useState<Character[]>([]);
   const [activeTab, setActiveTab] = useState<Tab>("predesigned");
@@ -99,6 +100,7 @@ const CharacterSelect = ({ onSelect, onBack, onVoiceDesign, customCharacters: pr
         id: string; name: string; emoji: string; language: string;
         tagline: string; image_style: string; first_message: string;
         voice_id: string; agent_id: string;
+        avatar_data?: string; avatar_mime_type?: string;
       }>) => {
         const chars: Character[] = data.map((d) => ({
           id: d.id,
@@ -106,7 +108,9 @@ const CharacterSelect = ({ onSelect, onBack, onVoiceDesign, customCharacters: pr
           language: d.language,
           tagline: d.tagline,
           description: d.tagline,
-          image: "",
+          image: d.avatar_data
+            ? `data:${d.avatar_mime_type || "image/png"};base64,${d.avatar_data}`
+            : "",
           emoji: d.emoji,
           greeting: `Hello! I'm ${d.name}!`,
           firstMessage: d.first_message,
@@ -325,17 +329,19 @@ const CharacterSelect = ({ onSelect, onBack, onVoiceDesign, customCharacters: pr
                       </div>
                     </motion.button>
 
-                    {/* Clone a Voice — coming soon */}
-                    <div className="relative flex items-center gap-3 px-5 py-3 rounded-2xl bg-card/60 backdrop-blur-sm border border-border/50 w-44 sm:w-52 opacity-60 cursor-not-allowed select-none">
-                      <span className="absolute -top-2 -right-2 bg-magic-teal text-white font-display text-xs font-bold px-2 py-0.5 rounded-full">
-                        Soon
-                      </span>
+                    {/* Clone a Voice */}
+                    <motion.button
+                      whileHover={{ scale: 1.04, y: -4 }}
+                      whileTap={{ scale: 0.97 }}
+                      onClick={onVoiceClone}
+                      className="flex items-center gap-3 px-5 py-3 rounded-2xl bg-card/60 backdrop-blur-sm border border-magic-teal/40 hover:border-magic-teal/80 w-44 sm:w-52 transition-all shadow-sm hover:shadow-md cursor-pointer"
+                    >
                       <span className="text-2xl shrink-0">🎙️</span>
-                      <div>
+                      <div className="text-left">
                         <p className="font-display text-sm font-bold text-foreground leading-tight">Clone a Voice</p>
                         <p className="text-xs text-muted-foreground mt-0.5 leading-tight">Use your own voice</p>
                       </div>
-                    </div>
+                    </motion.button>
                   </div>
                 </div>
               </motion.div>
