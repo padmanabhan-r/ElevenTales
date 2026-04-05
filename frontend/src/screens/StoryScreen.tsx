@@ -292,14 +292,6 @@ const StoryScreen = ({ character, theme, propImage, propDescription, propImageMi
     onBadgeAwarded: handleBadgeAwarded,
   });
 
-  // Seed the prop illustration into the canvas as soon as the session goes active.
-  // This ensures camera/sketch images appear immediately and prime visual continuity.
-  useEffect(() => {
-    if (sessionState === "active" && propImage && propImageMimeType) {
-      seedPropImage(propImage, propImageMimeType, propDescription ?? "");
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sessionState]);
 
   // Auto-save to gallery whenever the session ends — regardless of whether
   // the user clicked "End Story" or the WebSocket closed unexpectedly.
