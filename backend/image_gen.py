@@ -125,13 +125,13 @@ async def _is_safe_for_children(content: str) -> bool:
         f"Evaluate this theme or object: \"{content}\"\n\n"
         "Reply with exactly one word: SAFE or UNSAFE.\n\n"
         "Mark UNSAFE ONLY if the content explicitly involves:\n"
-        "- Weapons designed to kill: guns, firearms, bombs, explosives\n"
+        "- Weapons or items designed to harm: guns, firearms, bombs, explosives, knives, daggers, swords, scissors, blades, or any sharp cutting tool\n"
         "- Sexual or explicit adult content, nudity\n"
         "- Graphic violence, gore, or self-harm\n"
         "- Drugs, alcohol, or smoking\n"
         "- Hate speech or terrorism\n\n"
-        "Mark SAFE for everything else.\n\n"
-        "When in doubt, mark SAFE."
+        "Mark SAFE for everything else — including everyday objects (toys, books, food, clothing, vehicles), animals, nature, and fantasy.\n\n"
+        "When in doubt, mark UNSAFE."
     )
     try:
         response = await asyncio.wait_for(
