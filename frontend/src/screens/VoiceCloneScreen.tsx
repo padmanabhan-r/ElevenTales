@@ -484,8 +484,11 @@ const VoiceCloneScreen = ({ onBack, onCreated }: Props) => {
           {/* ── DONE ── */}
           {step === "done" && (
             <motion.div key="done" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col items-center gap-6 py-12 text-center">
-              <motion.div initial={{ scale: 0 }} animate={{ scale: [0, 1.3, 1] }} transition={{ duration: 0.6 }} className="w-24 h-24 rounded-full bg-primary/10 border-4 border-primary/30 flex items-center justify-center text-5xl">
-                {emoji}
+              <motion.div initial={{ scale: 0 }} animate={{ scale: [0, 1.3, 1] }} transition={{ duration: 0.6 }} className="w-24 h-24 rounded-full overflow-hidden bg-primary/10 border-4 border-primary/30 flex items-center justify-center">
+                {avatarData
+                  ? <img src={`data:${avatarMimeType};base64,${avatarData}`} alt={charName} className="w-full h-full object-cover" />
+                  : <span className="text-4xl">✨</span>
+                }
               </motion.div>
               <div>
                 <h2 className="font-display text-2xl font-bold text-primary mb-1">{charName} is ready!</h2>
