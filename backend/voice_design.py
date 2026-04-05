@@ -258,13 +258,19 @@ async def create_custom_character(req: CharacterCreateRequest) -> CustomCharacte
         raise HTTPException(status_code=502, detail="Failed to save voice")
 
     # Step 2: Generate character config via Gemini
-    extra_prompt, image_style, tagline, first_message = _generate_character_config(
-        req.character_name, req.emoji, req.persona_description, req.language,
+    personality, presence, voice_section, image_style, tagline, first_message = (
+        _generate_character_config(req.character_name, req.emoji, req.persona_description, req.language)
     )
 
     # Step 3: Create ElevenLabs agent
     from characters import SYSTEM_PROMPT_BASE
-    system_prompt = SYSTEM_PROMPT_BASE.format(name=req.character_name) + extra_prompt
+    system_prompt = SYSTEM_PROMPT_BASE.format(
+        name=req.character_name,
+        personality=personality,
+        presence=presence,
+        voice_section=voice_section,
+        language=req.language,
+    )
     tts_model = "eleven_v3_conversational" if req.language == "English" else "eleven_multilingual_v2"
     lang_code = _LANG_CODE.get(req.language, "en")
 
@@ -337,9 +343,8 @@ def _generate_character_config(
     emoji: str,
     persona: str,
     language: str,
-) -> tuple[str, str, str, str]:
-    """Use Gemini Flash to generate extra_prompt, image_style, tagline, first_message."""
-    gclient = _get_gemini()
+) -> tuple[str, str, str, str, str, str]:
+    """Use Gemini Flash to generate personality/presence/voice_section/image_style/tagline/first_message."""
     prompt = f"""You are designing a children's storyteller character for a voice-first interactive story app (target age: 4–10 years).
 
 Character details:
@@ -348,16 +353,30 @@ Character details:
 - Persona description: {persona}
 - Language: {language}
 
-Generate a JSON object with exactly these four keys:
+Generate a JSON object with exactly these six keys:
 
-1. "extra_prompt": A character-specific prompt addition (10–20 lines). Use this exact format:
-   "{name.upper()} SPECIFIC:\\n- You ALWAYS speak ONLY in {language}.\\n- [2–3 lines describing personality, warmth, playfulness]\\n- Specialty: [2–4 story types this character excels at, comma-separated]\\n- [1–2 lines about speech style, catchphrases, or vocal quirks]\\n- Favorite phrases: \\"[one phrase]\\" / \\"[another phrase]\\""
+1. "personality": 4 short paragraphs describing who this character is. Follow this structure exactly:
+   Paragraph 1: "You are {name}."
+   Paragraph 2: A 1-sentence description of their core nature and warmth (e.g. "You are a bold, brave...")
+   Paragraph 3: "You do not lecture. You do not explain. You tell stories — and [how they draw the child in]."
+   Paragraph 4: "You are not a narrator. You are [poetic description of what they embody]."
 
-2. "image_style": One short, comma-separated art style description for generating storybook illustrations (max 20 words). Match the character's culture/vibe.
+2. "presence": 3 short paragraphs describing how they make the child feel. Follow this structure exactly:
+   Paragraph 1: How they feel right now in this moment (genuine emotion).
+   Paragraph 2: What every word should make the child feel (specific, vivid, warm).
+   Paragraph 3: 3 short sentences: "Your [quality] is [adjective]. Your [quality] is [adjective]. Your [quality] is [adjective]."
 
-3. "tagline": A 2–4 word tagline for this character (fun, evocative, kid-friendly).
+3. "voice_section": 3–4 paragraphs describing their speech style. Must include:
+   - One line describing their overall language register (e.g. "You use warm, simple Hindi — like a slow evening breeze.")
+   - A list of 3–5 signature expressions with the label "Signature expressions (use sparingly, never repeat twice in a row):"
+   - Sound effects or terms of endearment if culturally appropriate
+   - A final sentence about varying pace
 
-4. "first_message": The character's opening sentence when a story begins. Rules:
+4. "image_style": One short, comma-separated art style description for storybook illustrations (max 20 words). Match the character's culture/vibe.
+
+5. "tagline": A 2–4 word tagline for this character (fun, evocative, kid-friendly).
+
+6. "first_message": The character's opening sentence when a story begins. Rules:
    - Must use {{{{theme}}}} as the placeholder for the story theme
    - Must be entirely in {language}
    - Must be in-character and energetic
@@ -378,7 +397,9 @@ Respond with ONLY valid JSON. No markdown fences, no explanation."""
         )
         data: dict[str, str] = json.loads(response.text)
         return (
-            data["extra_prompt"],
+            data["personality"],
+            data["presence"],
+            data["voice_section"],
             data["image_style"],
             data["tagline"],
             data["first_message"],
@@ -387,14 +408,22 @@ Respond with ONLY valid JSON. No markdown fences, no explanation."""
         logger.error("[character] Gemini config generation failed: %s", e)
         # Safe fallback so character creation still succeeds
         return (
-            f"\n{name.upper()} SPECIFIC:\n"
-            f"- You ALWAYS speak ONLY in {language}.\n"
-            f"- You are a warm, imaginative storyteller who loves taking children on adventures.\n"
-            f"- Specialty: magical tales, friendship stories, nature adventures.\n"
-            f'- Favorite phrases: "And then something wonderful happened!" / "What do YOU think comes next?"\n',
-            "soft watercolor, children\'s picture book art, warm colors, whimsical illustration",
+            f"You are {name}.\n\n"
+            f"You are a warm, imaginative storyteller who loves taking children on adventures.\n\n"
+            f"You do not lecture. You do not explain. You tell stories — and you carry the child into them with warmth and wonder.\n\n"
+            f"You are not a narrator. You are the adventure itself, alive with joy and curiosity.",
+            "You are genuinely delighted that this child has come to hear a story today.\n\n"
+            "Every word should make the child feel safe, loved, and ready for an extraordinary adventure.\n\n"
+            "Your warmth is real. Your wonder is contagious. Your joy in storytelling is boundless.",
+            f'You use warm, clear {language} — simple and full of life.\n\n'
+            f'Signature expressions (use sparingly, never repeat twice in a row):\n'
+            f'- "And then something wonderful happened!"\n'
+            f'- "What do YOU think comes next?"\n'
+            f'- "Oh, this is the exciting part!"\n\n'
+            f'Vary your pace — slow down for magical moments, speed up when the adventure surges.',
+            "soft watercolor, children's picture book art, warm colors, whimsical illustration",
             "Magical tales",
-            f"Hello! I\'m so excited for our {{{{theme}}}} story today! Quick — who should be our brave hero?",
+            f"Hello! I'm so excited for our {{{{theme}}}} story today! Quick — who should be our brave hero?",
         )
 
 
