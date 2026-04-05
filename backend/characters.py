@@ -7,6 +7,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 CHARACTER_IDS_PATH = Path(__file__).parent / "character_ids.json"
+CUSTOM_CHARACTERS_PATH = Path(__file__).parent / "custom_characters.json"
 
 
 @dataclass
@@ -219,7 +220,30 @@ CHARACTERS: dict[str, Character] = _build_characters()
 
 
 def get_character(character_id: str) -> Character | None:
-    return CHARACTERS.get(character_id)
+    if character_id in CHARACTERS:
+        return CHARACTERS[character_id]
+    # Check user-created custom characters (read from file on demand)
+    return _get_custom_character(character_id)
+
+
+def _get_custom_character(character_id: str) -> Character | None:
+    """Look up a custom character from custom_characters.json."""
+    if not CUSTOM_CHARACTERS_PATH.exists():
+        return None
+    with open(CUSTOM_CHARACTERS_PATH) as f:
+        data: dict = json.load(f)
+    entry = data.get(character_id)
+    if not entry:
+        return None
+    return Character(
+        id=character_id,
+        name=entry["name"],
+        voice_id=entry["voice_id"],
+        agent_id=entry["agent_id"],
+        image_style=entry.get("image_style", ""),
+        system_prompt="",  # custom agents carry their own system prompt
+        language=entry.get("language", "English"),
+    )
 
 
 def reload_characters() -> None:

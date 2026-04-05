@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Character } from "@/characters";
 import FloatingElements from "@/components/FloatingElements";
+import TopNav from "@/components/TopNav";
 
 const API_BASE = (import.meta.env.VITE_API_URL as string | undefined) ?? "";
 
@@ -520,36 +521,24 @@ const ThemeSelect = ({ character, onBack, onHome, onConfirm }: Props) => {
     <div className="relative h-screen bg-sky-gradient overflow-hidden">
       <FloatingElements />
 
-      <div className="relative z-10 h-full flex flex-col container mx-auto px-4 py-4 sm:py-6">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex items-center justify-between mb-4"
-        >
-          <div className="flex-1 flex items-center gap-4">
-            <button
-              onClick={handleBack}
-              className="text-muted-foreground hover:text-foreground font-body transition-colors"
-            >
-              ← Back
-            </button>
-            <button
-              onClick={onHome}
-              className="text-muted-foreground hover:text-foreground font-body transition-colors"
-            >
-              Home
-            </button>
-          </div>
-          <h1 className="font-display text-lg sm:text-xl font-bold text-primary">ElevenTales</h1>
-          {/* Character chip */}
-          <div className="flex-1 flex items-center justify-end gap-3">
-            <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-primary/50 flex-shrink-0">
-              <img src={character.image} alt={character.name} className="w-full h-full object-cover" />
+      <TopNav
+        onBack={handleBack}
+        onHome={onHome}
+        right={
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-primary/50 flex-shrink-0 flex items-center justify-center bg-muted/30">
+              {character.emoji ? (
+                <span className="text-base">{character.emoji}</span>
+              ) : (
+                <img src={character.image} alt={character.name} className="w-full h-full object-cover" />
+              )}
             </div>
             <span className="font-body text-sm text-foreground hidden sm:inline">{character.name}</span>
           </div>
-        </motion.div>
+        }
+      />
+
+      <div className="relative z-10 h-full flex flex-col container mx-auto px-4 pt-16 pb-4 sm:pt-20 sm:pb-6">
 
         {/* Title */}
         <motion.div

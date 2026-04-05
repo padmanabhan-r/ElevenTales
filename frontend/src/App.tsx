@@ -3,11 +3,12 @@ import LandingPage from "./screens/LandingPage";
 import CharacterSelect from "./screens/CharacterSelect";
 import ThemeSelect from "./screens/ThemeSelect";
 import StoryScreen from "./screens/StoryScreen";
+import VoiceDesignScreen from "./screens/VoiceDesignScreen";
 import MuteButton from "./components/MuteButton";
 import { Character } from "./characters";
 import { useAmbientSound } from "./hooks/useAmbientSound";
 
-type Screen = "landing" | "story-select" | "theme-select" | "story";
+type Screen = "landing" | "story-select" | "voice-design" | "theme-select" | "story";
 
 const App = () => {
   const [screen, setScreen] = useState<Screen>("landing");
@@ -17,6 +18,8 @@ const App = () => {
   const [propDescription, setPropDescription] = useState<string | undefined>();
   const [propImageMimeType, setPropImageMimeType] = useState<string | undefined>();
   const [muted, setMuted] = useState(false);
+  // Custom characters created this session — passed down so they appear immediately
+  const [sessionCustomChars, setSessionCustomChars] = useState<Character[]>([]);
 
   // Ambient music plays on landing + character select, stops during story or when muted
   useAmbientSound(screen !== "story" && !muted);
@@ -56,6 +59,11 @@ const App = () => {
     setPropImageMimeType(undefined);
   };
 
+  const handleVoiceDesignCreated = (character: Character) => {
+    setSessionCustomChars((prev) => [...prev, character]);
+    setScreen("story-select");
+  };
+
   return (
     <>
       {screen === "landing" && (
@@ -65,6 +73,14 @@ const App = () => {
         <CharacterSelect
           onSelect={handleCharacterSelect}
           onBack={handleBackToLanding}
+          onVoiceDesign={() => setScreen("voice-design")}
+          customCharacters={sessionCustomChars}
+        />
+      )}
+      {screen === "voice-design" && (
+        <VoiceDesignScreen
+          onBack={() => setScreen("story-select")}
+          onCreated={handleVoiceDesignCreated}
         />
       )}
       {screen === "theme-select" && selectedCharacter && (
