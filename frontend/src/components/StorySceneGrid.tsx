@@ -44,12 +44,13 @@ export function StorySceneGrid({ scenes }: Props) {
         </div>
       )}
 
-      {/* Scene count badge */}
+      {/* Scene count badge — hidden for now
       {loaded.length > 1 && (
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 bg-white/80 rounded-full px-3 py-1 font-bangers text-sm text-purple-800 shadow">
           Scene {loaded.length}
         </div>
       )}
+      */}
     </div>
   );
 }
