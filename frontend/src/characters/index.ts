@@ -11,14 +11,17 @@ export interface Character {
   language: string;
   tagline: string;
   description: string;
+  /** Asset path for built-in characters. Absent for custom characters (use emoji instead). */
   image: string;
   greeting: string;
   /** First message spoken by the agent. Use {{theme}} as the placeholder. */
   firstMessage: string;
   imageStyle: string;
-  category: "english" | "other";
+  category: "english" | "other" | "custom";
   /** True if this character uses a cloned voice (IVC). */
   clonedVoice?: boolean;
+  /** Emoji icon for user-created custom characters (replaces image). */
+  emoji?: string;
 }
 
 export const CHARACTERS: Character[] = [
