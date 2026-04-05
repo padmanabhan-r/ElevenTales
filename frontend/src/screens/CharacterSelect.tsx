@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CHARACTERS, Character } from "@/characters";
 import FloatingElements from "@/components/FloatingElements";
@@ -88,12 +88,11 @@ const CharacterCard = ({
 
 const CharacterSelect = ({ onSelect, onBack, onVoiceDesign, customCharacters: propCustomChars }: Props) => {
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [customChars, setCustomChars] = useState<Character[]>(propCustomChars ?? []);
+  const [apiChars, setApiChars] = useState<Character[]>([]);
   const [activeTab, setActiveTab] = useState<Tab>("predesigned");
 
-  // Load custom characters from API if not passed as prop
+  // Always fetch persisted custom characters from the API
   useEffect(() => {
-    if (propCustomChars !== undefined) return;
     fetch(`${API_BASE}/api/characters/custom`)
       .then((r) => r.json())
       .then((data: Array<{
@@ -114,16 +113,26 @@ const CharacterSelect = ({ onSelect, onBack, onVoiceDesign, customCharacters: pr
           imageStyle: d.image_style,
           category: "custom" as const,
         }));
-        setCustomChars(chars);
+        setApiChars(chars);
       })
       .catch(() => {});
-  }, [propCustomChars]);
+  }, []);
 
-  // Sync when a newly-created character is passed in
+  // Merge API chars with any chars created this session (session ones take precedence)
+  const sessionIds = new Set((propCustomChars ?? []).map((c) => c.id));
+  const customChars = [
+    ...(propCustomChars ?? []),
+    ...apiChars.filter((c) => !sessionIds.has(c.id)),
+  ];
+
+  // Switch to "mine" tab when a new character is created this session
+  const prevSessionCountRef = useRef(0);
   useEffect(() => {
-    if (!propCustomChars) return;
-    setCustomChars(propCustomChars);
-    setActiveTab("mine");
+    const next = propCustomChars?.length ?? 0;
+    if (next > prevSessionCountRef.current) {
+      prevSessionCountRef.current = next;
+      setActiveTab("mine");
+    }
   }, [propCustomChars]);
 
   const handleSelect = useCallback(
