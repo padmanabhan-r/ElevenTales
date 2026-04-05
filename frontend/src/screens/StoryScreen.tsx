@@ -5,6 +5,7 @@ import StorybookEmpty from "@/components/StorybookEmpty";
 import { StorySceneGrid } from "@/components/StorySceneGrid";
 import { useConversation, CharacterState, BadgeAward } from "@/hooks/useConversation";
 import { useStoryImages, StoryScene } from "@/hooks/useStoryImages";
+import { useStorySfx } from "@/hooks/useStorySfx";
 import FloatingElements from "@/components/FloatingElements";
 import BadgePopup from "@/components/BadgePopup";
 import StoryRecapModal from "@/components/StoryRecapModal";
@@ -243,8 +244,21 @@ const StoryScreen = ({ character, theme, propImage, propDescription, propImageMi
   const { scenes, triggerImageGeneration, forceImageGeneration, stop: stopImages, seedPropImage } = useStoryImages(
     character.imageStyle,
     sessionIdRef.current,
-    intervalSeconds
+    intervalSeconds,
   );
+
+  // SFX — one theme-matched sound pre-fetched at session start, plays on each reveal
+  const { playIllustrationSfx } = useStorySfx(theme);
+  const sfxPlayedRef = useRef(new Set<string>());
+
+  useEffect(() => {
+    scenes.forEach((scene) => {
+      if (scene.status === "loaded" && !sfxPlayedRef.current.has(scene.id)) {
+        sfxPlayedRef.current.add(scene.id);
+        playIllustrationSfx();
+      }
+    });
+  }, [scenes, playIllustrationSfx]);
 
   // Keep a stable ref to scenes for saving on end (state snapshot)
   const scenesRef = useRef<StoryScene[]>(scenes);
@@ -349,15 +363,6 @@ const StoryScreen = ({ character, theme, propImage, propDescription, propImageMi
 
   return (
     <>
-    {/* Badge popup and recap modal are outside the overflow-hidden container so that
-        position:fixed works correctly on iOS/iPad (overflow:hidden clips fixed children) */}
-    <AnimatePresence>
-      {activeBadge && (
-        <BadgePopup badge={activeBadge} onDismiss={handleBadgeDismiss} />
-      )}
-    </AnimatePresence>
-
-
     <div className="relative min-h-screen bg-sky-gradient overflow-hidden">
       <FloatingElements />
 
@@ -532,6 +537,12 @@ const StoryScreen = ({ character, theme, propImage, propDescription, propImageMi
             className="flex-1 md:w-4/5 flex flex-col gap-1.5"
           >
             <div className="flex-1 story-canvas rounded-2xl border-2 border-dashed border-cycle overflow-hidden flex flex-col relative">
+              {/* Badge popup — absolute so it centres within the canvas only */}
+              <AnimatePresence>
+                {activeBadge && (
+                  <BadgePopup badge={activeBadge} onDismiss={handleBadgeDismiss} />
+                )}
+              </AnimatePresence>
               {showRecap ? (
                 <StoryRecapModal
                   character={character}

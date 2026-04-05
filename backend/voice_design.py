@@ -376,12 +376,13 @@ Generate a JSON object with exactly these six keys:
 
 5. "tagline": A 2–4 word tagline for this character (fun, evocative, kid-friendly).
 
-6. "first_message": The character's opening sentence when a story begins. Rules:
+6. "first_message": The character's opening line when a story begins. Rules:
    - Must use {{{{theme}}}} as the placeholder for the story theme
    - Must be entirely in {language}
    - Must be in-character and energetic
-   - Must end with a question inviting the child to shape the story
-   - 2–3 sentences max
+   - Must be SHORT — one sentence only, ending with a simple "ready?" or "shall we begin?" style close
+   - Do NOT ask who should be in the story or invite the child to shape the plot
+   - Examples of the right length/style: "A {{{{theme}}}} adventure awaits — shall we begin?" or "A {{{{theme}}}} tale! My powers are ready. Shall we start?"
 
 Respond with ONLY valid JSON. No markdown fences, no explanation."""
 
