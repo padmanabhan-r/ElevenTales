@@ -143,6 +143,43 @@ async def _is_safe_for_children(content: str) -> bool:
         return True  # fail open — don't block on classifier error
 
 
+# ── Character avatar ──────────────────────────────────────────────────────────
+
+async def generate_character_avatar(name: str, persona: str, image_style: str) -> tuple[str, str]:
+    """Generate a cute chibi portrait for a custom storyteller character."""
+    client = _get_client()
+    prompt = (
+        f"{SAFETY_PREFIX}"
+        f"cute chibi kawaii cartoon character portrait, pure white background, "
+        f"head and upper body only, large expressive eyes, round friendly face, "
+        f"bright cheerful colors, clean children's storybook illustration, "
+        f"character: {name} — {persona[:200]}. "
+        f"Art style: {image_style[:100]}. "
+        f"No text, no words, no letters, no background scenery."
+    )
+    try:
+        response = await asyncio.wait_for(
+            client.aio.models.generate_content(
+                model=IMAGE_MODEL,
+                contents=prompt,
+                config=types.GenerateContentConfig(
+                    response_modalities=["IMAGE", "TEXT"],
+                    safety_settings=_CHILD_SAFETY_SETTINGS,
+                ),
+            ),
+            timeout=45.0,
+        )
+        for part in (response.candidates[0].content.parts if response.candidates else []):
+            if part.inline_data and part.inline_data.data:
+                return (
+                    base64.b64encode(part.inline_data.data).decode("utf-8"),
+                    part.inline_data.mime_type or "image/png",
+                )
+    except Exception as e:
+        print(f"[avatar] Generation failed for {name}: {e}")
+    return "", ""  # graceful fallback — caller will use emoji instead
+
+
 # ── Routes ────────────────────────────────────────────────────────────────────
 
 class ThemeCheckRequest(BaseModel):

@@ -135,7 +135,7 @@ class CharacterCreateRequest(BaseModel):
     generated_voice_id: str
     voice_description: str
     character_name: str
-    emoji: str
+    emoji: str = ""
     persona_description: str
     language: str = "English"
 
@@ -147,14 +147,6 @@ class CharacterCreateRequest(BaseModel):
             raise ValueError("character_name cannot be empty")
         if len(v) > 50:
             raise ValueError("character_name too long")
-        return v
-
-    @field_validator("emoji")
-    @classmethod
-    def emoji_not_empty(cls, v: str) -> str:
-        v = v.strip()
-        if not v:
-            raise ValueError("emoji cannot be empty")
         return v
 
     @field_validator("language")
@@ -174,6 +166,10 @@ class CharacterCreateRequest(BaseModel):
             raise ValueError("persona_description too long")
         return v.strip()
 
+    # Pre-generated avatar from the preview step (skip server-side generation if provided)
+    avatar_data: str = ""
+    avatar_mime_type: str = ""
+
 
 class CustomCharacterData(BaseModel):
     id: str
@@ -185,6 +181,8 @@ class CustomCharacterData(BaseModel):
     image_style: str
     tagline: str
     first_message: str
+    avatar_data: str = ""       # base64 character portrait (empty = use emoji)
+    avatar_mime_type: str = ""  # e.g. "image/png"
 
 
 # ── Endpoints ─────────────────────────────────────────────────────────────────
@@ -225,6 +223,28 @@ async def _is_safe_for_children(content: str) -> bool:
     return await _img_safe(content)
 
 
+class AvatarRequest(BaseModel):
+    character_name: str
+    persona_description: str
+
+
+class AvatarResponse(BaseModel):
+    avatar_data: str
+    avatar_mime_type: str
+
+
+@router.post("/api/character/avatar", response_model=AvatarResponse)
+async def generate_avatar_preview(req: AvatarRequest) -> AvatarResponse:
+    """Generate a character portrait. Can be called multiple times for regeneration."""
+    from image_gen import generate_character_avatar
+    avatar_data, avatar_mime_type = await generate_character_avatar(
+        req.character_name, req.persona_description, ""
+    )
+    if not avatar_data:
+        raise HTTPException(status_code=502, detail="Avatar generation failed — please try again.")
+    return AvatarResponse(avatar_data=avatar_data, avatar_mime_type=avatar_mime_type)
+
+
 @router.post("/api/character/create", response_model=CustomCharacterData)
 async def create_custom_character(req: CharacterCreateRequest) -> CustomCharacterData:
     """Save voice, generate system prompt via Gemini, create ElevenLabs agent."""
@@ -258,9 +278,18 @@ async def create_custom_character(req: CharacterCreateRequest) -> CustomCharacte
         raise HTTPException(status_code=502, detail="Failed to save voice")
 
     # Step 2: Generate character config via Gemini
+    from image_gen import generate_character_avatar
     personality, presence, voice_section, image_style, tagline, first_message = (
         _generate_character_config(req.character_name, req.emoji, req.persona_description, req.language)
     )
+
+    # Use pre-generated avatar from frontend preview step, or generate now as fallback
+    if req.avatar_data:
+        avatar_data, avatar_mime_type = req.avatar_data, req.avatar_mime_type
+    else:
+        avatar_data, avatar_mime_type = await generate_character_avatar(
+            req.character_name, req.persona_description, image_style
+        )
 
     # Step 3: Create ElevenLabs agent
     from characters import SYSTEM_PROMPT_BASE
@@ -323,6 +352,8 @@ async def create_custom_character(req: CharacterCreateRequest) -> CustomCharacte
         "image_style": image_style,
         "tagline": tagline,
         "first_message": first_message,
+        "avatar_data": avatar_data,
+        "avatar_mime_type": avatar_mime_type,
     }
     _save_custom_character(char_id, char_data)
 
