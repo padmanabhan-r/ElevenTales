@@ -9,18 +9,12 @@ interface Props {
   onCreated: (character: Character) => void;
 }
 
-type Step = "record" | "preview" | "details" | "creating" | "done";
+type Step = "record" | "preview" | "details" | "avatar" | "creating" | "done";
 
 const API_BASE = import.meta.env.VITE_API_URL ?? "";
 
 const LANGUAGES = ["English", "Hindi", "Tamil", "Spanish", "French", "Mandarin"];
 
-const EMOJI_GROUPS = [
-  { label: "Fantasy & Magic", emojis: ["🧚", "🧙", "🦄", "🐉", "🧜", "🧝", "🧞", "🪄", "⭐", "🌟", "✨", "🔮"] },
-  { label: "Animals", emojis: ["🦁", "🐯", "🐻", "🦊", "🐺", "🦅", "🦋", "🐬", "🐙", "🦕", "🦖", "🐸", "🦗"] },
-  { label: "Adventure", emojis: ["🏴‍☠️", "⚔️", "🚀", "🌊", "🏔️", "🗺️", "🎪", "🎠", "🌈", "🎭", "🎩", "🤠"] },
-  { label: "Nature & Space", emojis: ["🌸", "🌻", "🍄", "🌙", "☀️", "🌍", "🌺", "🍀", "🦜", "🐝", "🌴", "🏝️"] },
-];
 
 const toBase64 = (blob: Blob): Promise<string> =>
   new Promise((resolve, reject) => {
@@ -51,13 +45,17 @@ const VoiceCloneScreen = ({ onBack, onCreated }: Props) => {
 
   // Details
   const [charName, setCharName] = useState("");
-  const [emoji, setEmoji] = useState("");
   const [personaDesc, setPersonaDesc] = useState("");
   const [language, setLanguage] = useState("English");
-  const [emojiPanelOpen, setEmojiPanelOpen] = useState(true);
 
   const [step, setStep] = useState<Step>("record");
   const [error, setError] = useState("");
+
+  // Avatar preview
+  const [avatarData, setAvatarData] = useState("");
+  const [avatarMimeType, setAvatarMimeType] = useState("image/png");
+  const [loadingAvatar, setLoadingAvatar] = useState(false);
+  const [avatarError, setAvatarError] = useState("");
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
@@ -196,10 +194,37 @@ const VoiceCloneScreen = ({ onBack, onCreated }: Props) => {
     setStep("record");
   };
 
+  // ── Avatar preview ───────────────────────────────────────────────────────────
+
+  const handleGenerateAvatar = async () => {
+    setAvatarError("");
+    setLoadingAvatar(true);
+    setAvatarData("");
+    try {
+      const res = await fetch(`${API_BASE}/api/character/avatar`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ character_name: charName.trim(), persona_description: personaDesc.trim() }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error((err as { detail?: string }).detail ?? "Avatar generation failed");
+      }
+      const data = await res.json();
+      setAvatarData(data.avatar_data);
+      setAvatarMimeType(data.avatar_mime_type || "image/png");
+      setStep("avatar");
+    } catch (e: unknown) {
+      setAvatarError(e instanceof Error ? e.message : "Something went wrong");
+    } finally {
+      setLoadingAvatar(false);
+    }
+  };
+
   // ── Create character ─────────────────────────────────────────────────────────
 
   const handleCreate = async () => {
-    if (!voiceId || !charName.trim() || !emoji.trim() || !personaDesc.trim()) return;
+    if (!voiceId || !charName.trim() || !personaDesc.trim()) return;
     setStep("creating");
     setError("");
     try {
@@ -209,9 +234,10 @@ const VoiceCloneScreen = ({ onBack, onCreated }: Props) => {
         body: JSON.stringify({
           voice_id: voiceId,
           character_name: charName.trim(),
-          emoji: emoji.trim(),
           persona_description: personaDesc.trim(),
           language,
+          avatar_data: avatarData,
+          avatar_mime_type: avatarMimeType,
         }),
       });
       if (!res.ok) {
@@ -225,7 +251,9 @@ const VoiceCloneScreen = ({ onBack, onCreated }: Props) => {
         language: data.language,
         tagline: data.tagline,
         description: personaDesc.trim(),
-        image: "",
+        image: data.avatar_data
+          ? `data:${data.avatar_mime_type || "image/png"};base64,${data.avatar_data}`
+          : "",
         emoji: data.emoji,
         greeting: `Hello! I'm ${data.name}!`,
         firstMessage: data.first_message,
@@ -242,9 +270,9 @@ const VoiceCloneScreen = ({ onBack, onCreated }: Props) => {
   };
 
   const STEP_LABELS: Record<string, string> = {
-    record: "Record", preview: "Preview", details: "Details",
+    record: "Record", preview: "Preview", details: "Details", avatar: "Avatar",
   };
-  const STEP_ORDER = ["record", "preview", "details"] as const;
+  const STEP_ORDER = ["record", "preview", "details", "avatar"] as const;
 
   return (
     <div className="relative min-h-screen bg-sky-gradient overflow-auto flex flex-col">
@@ -380,39 +408,6 @@ const VoiceCloneScreen = ({ onBack, onCreated }: Props) => {
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <button type="button" onClick={() => setEmojiPanelOpen((o) => !o)} className="flex items-center justify-between w-full text-left">
-                  <label className="font-display text-sm font-bold text-foreground pointer-events-none">Character Icon <span className="text-destructive">*</span></label>
-                  <div className="flex items-center gap-2">
-                    {emoji && <div className="w-8 h-8 rounded-full bg-primary/10 border-2 border-primary/30 flex items-center justify-center text-xl">{emoji}</div>}
-                    <svg className={`w-4 h-4 text-muted-foreground transition-transform duration-200 ${emojiPanelOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </div>
-                </button>
-                <AnimatePresence initial={false}>
-                  {emojiPanelOpen && (
-                    <motion.div key="emoji-panel" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.2 }} className="overflow-hidden">
-                      <div className="rounded-xl border border-border/60 bg-card/80 p-2.5">
-                        {EMOJI_GROUPS.map((group) => (
-                          <div key={group.label} className="mb-2 last:mb-0">
-                            <p className="text-[10px] font-bold font-display text-muted-foreground uppercase tracking-wide mb-1.5 px-0.5">{group.label}</p>
-                            <div className="flex flex-wrap gap-1">
-                              {group.emojis.map((e) => (
-                                <button key={e} type="button" onClick={() => { setEmoji(e); setEmojiPanelOpen(false); }}
-                                  className={`w-9 h-9 rounded-lg text-xl flex items-center justify-center transition-all ${emoji === e ? "bg-primary/20 border-2 border-primary scale-110" : "hover:bg-muted/60 border-2 border-transparent"}`}>
-                                  {e}
-                                </button>
-                              ))}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-
-              <div className="flex flex-col gap-1.5">
                 <label className="font-display text-sm font-bold text-foreground">Story Language</label>
                 <select value={language} onChange={(e) => setLanguage(e.target.value)} className="w-full rounded-xl border border-border/60 bg-card/80 px-3 py-2.5 text-sm font-body text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50">
                   {LANGUAGES.map((l) => <option key={l} value={l}>{l}</option>)}
@@ -427,13 +422,49 @@ const VoiceCloneScreen = ({ onBack, onCreated }: Props) => {
                   rows={4} className="w-full rounded-xl border border-border/60 bg-card/80 px-3 py-2.5 text-sm font-body text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none" />
               </div>
 
-              {error && <p className="text-sm text-destructive font-body text-center">{error}</p>}
+              {avatarError && <p className="text-sm text-destructive font-body text-center">{avatarError}</p>}
 
               <div className="flex gap-3">
                 <button onClick={() => setStep("preview")} className="flex-1 py-3 rounded-2xl border border-border/60 text-foreground font-display font-bold text-sm transition-colors hover:bg-card/80">← Back</button>
-                <motion.button whileTap={{ scale: 0.97 }} disabled={!charName.trim() || !emoji.trim() || !personaDesc.trim()} onClick={handleCreate}
+                <motion.button whileTap={{ scale: 0.97 }} disabled={!charName.trim() || !personaDesc.trim() || loadingAvatar} onClick={handleGenerateAvatar}
                   className="flex-[2] py-3 rounded-2xl bg-primary text-white font-display font-bold text-base disabled:opacity-40 disabled:cursor-not-allowed shadow-md">
-                  🎙️ Clone & Create
+                  {loadingAvatar ? "🎨 Generating…" : "🎨 Generate Avatar →"}
+                </motion.button>
+              </div>
+              <button disabled={!charName.trim() || !personaDesc.trim()} onClick={handleCreate}
+                className="w-full text-xs text-muted-foreground hover:text-foreground font-body underline underline-offset-2 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+                Skip, create without avatar
+              </button>
+            </motion.div>
+          )}
+
+          {/* ── STEP 4: Avatar Preview ── */}
+          {step === "avatar" && (
+            <motion.div key="avatar" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="flex flex-col items-center gap-5">
+              <div className="text-center">
+                <h2 className="font-display text-lg font-bold text-foreground mb-1">Your character's portrait</h2>
+                <p className="text-sm text-muted-foreground font-body">Not happy with it? Regenerate as many times as you like.</p>
+              </div>
+
+              {avatarData ? (
+                <motion.img key={avatarData} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
+                  src={`data:${avatarMimeType};base64,${avatarData}`} alt={charName}
+                  className="w-48 h-48 rounded-3xl object-cover shadow-lg border-4 border-primary/20" />
+              ) : (
+                <div className="w-48 h-48 rounded-3xl bg-muted/30 border border-border/40" />
+              )}
+
+              {avatarError && <p className="text-sm text-destructive font-body">{avatarError}</p>}
+
+              <div className="flex gap-3 w-full">
+                <button onClick={() => setStep("details")} className="flex-1 py-3 rounded-2xl border border-border/60 text-foreground font-display font-bold text-sm transition-colors hover:bg-card/80">← Back</button>
+                <motion.button whileTap={{ scale: 0.97 }} disabled={loadingAvatar} onClick={handleGenerateAvatar}
+                  className="flex-1 py-3 rounded-2xl border border-primary/40 text-primary font-display font-bold text-sm disabled:opacity-40 transition-all hover:bg-primary/10">
+                  {loadingAvatar ? "Generating…" : "🔄 Regenerate"}
+                </motion.button>
+                <motion.button whileTap={{ scale: 0.97 }} disabled={loadingAvatar} onClick={handleCreate}
+                  className="flex-[2] py-3 rounded-2xl bg-primary text-white font-display font-bold text-base disabled:opacity-40 disabled:cursor-not-allowed shadow-md">
+                  🎙️ Create!
                 </motion.button>
               </div>
             </motion.div>

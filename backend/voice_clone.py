@@ -53,9 +53,11 @@ class VoiceClonePreviewResponse(BaseModel):
 class VoiceCloneCreateRequest(BaseModel):
     voice_id: str      # from the preview step — already cloned
     character_name: str
-    emoji: str
+    emoji: str = ""
     persona_description: str
     language: str = "English"
+    avatar_data: str = ""
+    avatar_mime_type: str = ""
 
     @field_validator("character_name")
     @classmethod
@@ -65,14 +67,6 @@ class VoiceCloneCreateRequest(BaseModel):
             raise ValueError("character_name cannot be empty")
         if len(v) > 50:
             raise ValueError("character_name too long")
-        return v
-
-    @field_validator("emoji")
-    @classmethod
-    def emoji_not_empty(cls, v: str) -> str:
-        v = v.strip()
-        if not v:
-            raise ValueError("emoji cannot be empty")
         return v
 
     @field_validator("language")
@@ -164,9 +158,18 @@ async def create_cloned_character(req: VoiceCloneCreateRequest) -> CustomCharact
     agent_display_name = f"ElevenTales - Cloned {req.character_name}"
 
     # Generate character config via Gemini
+    from image_gen import generate_character_avatar
     personality, presence, voice_section, image_style, tagline, first_message = (
         _generate_character_config(req.character_name, req.emoji, req.persona_description, req.language)
     )
+
+    # Use pre-generated avatar from frontend preview step, or generate now as fallback
+    if req.avatar_data:
+        avatar_data, avatar_mime_type = req.avatar_data, req.avatar_mime_type
+    else:
+        avatar_data, avatar_mime_type = await generate_character_avatar(
+            req.character_name, req.persona_description, image_style
+        )
 
     # Create ElevenLabs agent
     system_prompt = SYSTEM_PROMPT_BASE.format(
@@ -224,6 +227,8 @@ async def create_cloned_character(req: VoiceCloneCreateRequest) -> CustomCharact
         "image_style": image_style,
         "tagline": tagline,
         "first_message": first_message,
+        "avatar_data": avatar_data,
+        "avatar_mime_type": avatar_mime_type,
     }
     _save_custom_character(char_id, char_data)
 

@@ -54,11 +54,11 @@ const CharacterCard = ({
       animate={selected ? { scale: [1, 1.05, 1] } : {}}
       transition={{ duration: 0.6, repeat: selected ? Infinity : 0 }}
     >
-      {character.emoji ? (
-        <span className="text-4xl sm:text-5xl">{character.emoji}</span>
-      ) : (
+      {character.image ? (
         <img src={character.image} alt={character.name} className="w-full h-full object-cover" />
-      )}
+      ) : character.emoji ? (
+        <span className="text-4xl sm:text-5xl">{character.emoji}</span>
+      ) : null}
     </motion.div>
     <div className="text-center">
       <h3 className="font-display text-sm sm:text-base font-bold text-foreground leading-tight">
@@ -100,6 +100,7 @@ const CharacterSelect = ({ onSelect, onBack, onVoiceDesign, onVoiceClone, custom
         id: string; name: string; emoji: string; language: string;
         tagline: string; image_style: string; first_message: string;
         voice_id: string; agent_id: string;
+        avatar_data?: string; avatar_mime_type?: string;
       }>) => {
         const chars: Character[] = data.map((d) => ({
           id: d.id,
@@ -107,7 +108,9 @@ const CharacterSelect = ({ onSelect, onBack, onVoiceDesign, onVoiceClone, custom
           language: d.language,
           tagline: d.tagline,
           description: d.tagline,
-          image: "",
+          image: d.avatar_data
+            ? `data:${d.avatar_mime_type || "image/png"};base64,${d.avatar_data}`
+            : "",
           emoji: d.emoji,
           greeting: `Hello! I'm ${d.name}!`,
           firstMessage: d.first_message,
