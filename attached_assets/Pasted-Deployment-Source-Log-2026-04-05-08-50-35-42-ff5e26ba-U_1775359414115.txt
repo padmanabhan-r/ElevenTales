@@ -1,0 +1,191 @@
+Deployment
+Source
+Log
+2026-04-05 08:50:35.42
+ff5e26ba
+User
+npm audit fix --force
+2026-04-05 08:51:56.53
+ff5e26ba
+User
+Downloading pydantic-core (2.0MiB)
+2026-04-05 08:52:02.32
+ff5e26ba
+User
+INFO: Waiting for application startup.
+2026-04-05 08:52:02.32
+ff5e26ba
+User
+INFO: Started server process [98]
+2026-04-05 08:52:02.32
+ff5e26ba
+User
+INFO: Application startup complete.
+2026-04-05 08:52:02.33
+ff5e26ba
+User
+INFO: Uvicorn running on http://0.0.0.0:8080 (Press CTRL+C to quit)
+2026-04-05 08:52:02.33
+ff5e26ba
+User
+INFO: Uvicorn running on http://0.0.0.0:8080 (Press CTRL+C to quit)
+2026-04-05 08:52:38.91
+ff5e26ba
+System
+a port configuration was specified but the required port was never opened
+2026-04-05 08:52:46.23
+ff5e26ba
+System
+starting up user application
+2026-04-05 08:52:46.23
+ff5e26ba
+System
+metasidecar: loaded enterprise status from environment is_enterprise=false
+2026-04-05 08:52:46.23
+ff5e26ba
+System
+forwarding local port 5000 to external port 80 (mapped as 1104)
+2026-04-05 08:52:46.64
+ff5e26ba
+User
+[start] Building frontend...
+2026-04-05 08:52:49.96
+ff5e26ba
+User
+28 packages are looking for funding
+2026-04-05 08:52:49.96
+ff5e26ba
+User
+run `npm fund` for details
+2026-04-05 08:52:49.96
+ff5e26ba
+User
+up to date, audited 130 packages in 3s
+2026-04-05 08:52:49.98
+ff5e26ba
+User
+To address all issues (including breaking changes), run:
+2026-04-05 08:52:49.98
+ff5e26ba
+User
+2 moderate severity vulnerabilities
+2026-04-05 08:52:49.98
+ff5e26ba
+User
+npm audit fix --force
+2026-04-05 08:52:49.98
+ff5e26ba
+User
+npm notice
+2026-04-05 08:52:49.98
+ff5e26ba
+User
+npm notice
+2026-04-05 08:52:49.98
+ff5e26ba
+User
+npm notice New major version of npm available! 10.8.2 -> 11.12.1
+2026-04-05 08:52:49.98
+ff5e26ba
+User
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.12.1
+2026-04-05 08:52:49.98
+ff5e26ba
+User
+npm notice To update run: npm install -g npm@11.12.1
+2026-04-05 08:52:50.29
+ff5e26ba
+User
+> storyforge-frontend@0.0.0 build
+2026-04-05 08:52:50.29
+ff5e26ba
+User
+> vite build
+2026-04-05 08:52:50.86
+ff5e26ba
+User
+vite v5.4.21 building for production...
+2026-04-05 08:52:50.86
+ff5e26ba
+User
+vite v5.4.21 building for production...
+2026-04-05 08:52:51.95
+ff5e26ba
+User
+transforming...
+2026-04-05 08:52:59.58
+ff5e26ba
+User
+✓ 453 modules transformed.
+2026-04-05 08:53:00.46
+ff5e26ba
+User
+rendering chunks...
+2026-04-05 08:53:00.48
+ff5e26ba
+User
+computing gzip size...
+2026-04-05 08:53:00.53
+ff5e26ba
+User
+dist/index.html 1.50 kB │ gzip: 0.70 kB
+2026-04-05 08:53:00.53
+ff5e26ba
+User
+dist/assets/wizard-BDdMXrbA.png 25.64 kB
+2026-04-05 08:53:00.53
+ff5e26ba
+User
+dist/assets/pirate-D1LZK9Cw.png 28.71 kB
+2026-04-05 08:53:00.53
+ff5e26ba
+User
+dist/assets/fairy-BfEyJ8Fa.png 24.54 kB
+2026-04-05 08:53:00.53
+ff5e26ba
+User
+dist/assets/dadi-BvKfFE6l.png 31.03 kB
+2026-04-05 08:53:00.53
+ff5e26ba
+User
+dist/assets/hero-bg-AXbQGA_C.jpg 153.78 kB
+2026-04-05 08:53:00.53
+ff5e26ba
+User
+dist/assets/index-BT6o431s.css 36.52 kB │ gzip: 7.45 kB
+2026-04-05 08:53:00.53
+ff5e26ba
+User
+dist/assets/index-aoIjKPLX.js 860.28 kB │ gzip: 243.13 kB
+2026-04-05 08:53:00.53
+ff5e26ba
+User
+dist/assets/maharaja-QJaMtSKv.png 35.51 kB
+2026-04-05 08:53:00.53
+ff5e26ba
+User
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+2026-04-05 08:53:00.53
+ff5e26ba
+User
+(!) Some chunks are larger than 500 kB after minification. Consider:
+2026-04-05 08:53:00.53
+ff5e26ba
+User
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+2026-04-05 08:53:00.53
+ff5e26ba
+User
+- Using dynamic import() to code-split the application
+2026-04-05 08:53:00.53
+ff5e26ba
+User
+✓ built in 9.63s
+2026-04-05 08:53:00.79
+ff5e26ba
+User
+[start] Starting backend...
+2026-04-05 08:53:01.50
+ff5e26ba
+User
+Resolved 38 packages in 50ms
