@@ -13,6 +13,7 @@ from pydantic import BaseModel
 load_dotenv()
 
 from image_gen import router as image_router
+from voice_design import router as voice_design_router
 from session import get_session_url
 from characters import get_character
 
@@ -26,6 +27,7 @@ app.add_middleware(
 )
 
 app.include_router(image_router)
+app.include_router(voice_design_router)
 
 
 # ── Health ────────────────────────────────────────────────────────────────────

@@ -19,6 +19,8 @@ const FIRST_IMAGE_MIN_CHARS = 150;
 // If a tool call fired an image within this window, the turn-complete fallback stays silent.
 // This prevents double-firing when Gemini is actively using generate_illustration.
 const TOOL_CALL_GRACE_MS = 25_000;
+// Minimum gap between any two forced (tool-call) image generations.
+const FORCE_COOLDOWN_MS = 8_000;
 
 export function useStoryImages(imageStyle: string, sessionId: string, intervalSeconds: number = 10) {
   const [scenes, setScenes] = useState<StoryScene[]>([]);
@@ -164,9 +166,12 @@ export function useStoryImages(imageStyle: string, sessionId: string, intervalSe
       if (stoppedRef.current) return;
       if (sceneCountRef.current >= MAX_SCENES) return;
 
+      // Prevent rapid-fire calls (e.g. model fires twice quickly)
+      const now = Date.now();
+      if (lastTriggerTimeRef.current > 0 && now - lastTriggerTimeRef.current < FORCE_COOLDOWN_MS) return;
+
       storyContextRef.current = (storyContextRef.current + " " + sceneDescription).slice(-2000).trim();
       // Mark that the tool call path just fired — fallback will stay silent for TOOL_CALL_GRACE_MS
-      const now = Date.now();
       lastToolCallTimeRef.current = now;
       lastTriggerTimeRef.current = now;
 

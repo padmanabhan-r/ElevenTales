@@ -8,6 +8,7 @@ import { useStoryImages, StoryScene } from "@/hooks/useStoryImages";
 import FloatingElements from "@/components/FloatingElements";
 import BadgePopup from "@/components/BadgePopup";
 import StoryRecapModal from "@/components/StoryRecapModal";
+import TopNav from "@/components/TopNav";
 
 const THEMES_EMOJI: Record<string, string> = {
   Animals: "🦁", Space: "🚀", Kingdoms: "🏰", Ocean: "🌊", Food: "🍕",
@@ -360,47 +361,27 @@ const StoryScreen = ({ character, theme, propImage, propDescription, propImageMi
     <div className="relative min-h-screen bg-sky-gradient overflow-hidden">
       <FloatingElements />
 
-      <div className="relative z-10 h-screen flex flex-col">
-        {/* Header */}
-        <motion.header
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex items-center justify-between px-4 sm:px-8 py-4 border-b border-border/30"
-        >
-          <div className="flex items-center gap-4">
-            <button
-              onClick={handleBack}
-              className="text-muted-foreground hover:text-foreground font-body transition-colors"
-            >
-              ← Back
-            </button>
-            <button
-              onClick={handleHome}
-              className="text-muted-foreground hover:text-foreground font-body transition-colors"
-            >
-              Home
-            </button>
-          </div>
-          <h1 className="font-display text-lg sm:text-xl font-bold text-primary">ElevenTales</h1>
-          <div className="flex items-center justify-end gap-3 flex-shrink-0">
-            {theme && theme !== "camera_prop" && theme !== "sketch" && (
-              <span className="whitespace-nowrap px-3 py-1 rounded-full bg-primary/20 border border-primary/30 font-body text-xs text-primary">
-                {THEMES_EMOJI[theme] ?? "💭"} {theme}
-              </span>
-            )}
-            {theme === "camera_prop" && (
-              <span className="whitespace-nowrap px-3 py-1 rounded-full bg-primary/20 border border-primary/30 font-body text-xs text-primary">
-                📸 Prop story
-              </span>
-            )}
-            {theme === "sketch" && (
-              <span className="whitespace-nowrap px-3 py-1 rounded-full bg-primary/20 border border-primary/30 font-body text-xs text-primary">
-                ✏️ Sketch story
-              </span>
-            )}
-          </div>
-        </motion.header>
+      <TopNav
+        onBack={handleBack}
+        onHome={handleHome}
+        right={
+          theme && theme !== "camera_prop" && theme !== "sketch" ? (
+            <span className="whitespace-nowrap px-3 py-1 rounded-full bg-primary/20 border border-primary/30 font-body text-xs text-primary">
+              {THEMES_EMOJI[theme] ?? "💭"} {theme}
+            </span>
+          ) : theme === "camera_prop" ? (
+            <span className="whitespace-nowrap px-3 py-1 rounded-full bg-primary/20 border border-primary/30 font-body text-xs text-primary">
+              📸 Prop story
+            </span>
+          ) : theme === "sketch" ? (
+            <span className="whitespace-nowrap px-3 py-1 rounded-full bg-primary/20 border border-primary/30 font-body text-xs text-primary">
+              ✏️ Sketch story
+            </span>
+          ) : undefined
+        }
+      />
 
+      <div className="relative z-10 h-screen flex flex-col pt-14">
         {/* Main content */}
         <div className="flex-1 flex flex-col md:flex-row gap-4 p-4 sm:p-6 overflow-hidden">
           {/* Left — character panel */}
@@ -422,12 +403,16 @@ const StoryScreen = ({ character, theme, propImage, propDescription, propImageMi
               ))}
               <motion.div
                 key={characterState}
-                className={`w-[8.25rem] h-[8.25rem] rounded-full overflow-hidden border-4 shadow-xl transition-colors duration-500 ${BORDER_CLASS[characterState]} ${avatarStateClass}`}
+                className={`w-[8.25rem] h-[8.25rem] rounded-full overflow-hidden border-4 shadow-xl transition-colors duration-500 ${BORDER_CLASS[characterState]} ${avatarStateClass} flex items-center justify-center bg-muted/30`}
                 initial={{ scale: 1, rotate: 0, y: 0 }}
                 animate={PORTRAIT_ANIMATE[characterState]}
                 transition={PORTRAIT_TRANSITION[characterState]}
               >
-                <img src={character.image} alt={character.name} className="w-full h-full object-cover" />
+                {character.image ? (
+                  <img src={character.image} alt={character.name} className="w-full h-full object-cover" />
+                ) : (
+                  <span className="text-6xl leading-none">{character.emoji}</span>
+                )}
               </motion.div>
             </div>
 
