@@ -28,6 +28,7 @@ backend/custom_characters.json
 # Replit config (can contain injected secrets via [userenv.shared])
 .replit
 replit.nix
+.local/
 
 # OS
 .DS_Store
