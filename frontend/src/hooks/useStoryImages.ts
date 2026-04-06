@@ -22,7 +22,12 @@ const TOOL_CALL_GRACE_MS = 25_000;
 // Minimum gap between any two forced (tool-call) image generations.
 const FORCE_COOLDOWN_MS = 8_000;
 
-export function useStoryImages(imageStyle: string, sessionId: string, intervalSeconds: number = 10) {
+const IMAGE_MODELS: Record<string, string> = {
+  "nano-banana":   "gemini-2.5-flash-image",
+  "nano-banana-2": "gemini-3.1-flash-image-preview",
+};
+
+export function useStoryImages(imageStyle: string, sessionId: string, intervalSeconds: number = 10, imageModelKey?: string) {
   const [scenes, setScenes] = useState<StoryScene[]>([]);
   const sceneCountRef = useRef(0);
   const lastTriggerTimeRef = useRef(0);
@@ -110,6 +115,7 @@ export function useStoryImages(imageStyle: string, sessionId: string, intervalSe
             previous_image_data: prevImage?.data ?? "",
             previous_image_mime_type: prevImage?.mimeType ?? "image/png",
             previous_scene_description: prevImage?.sceneDescription ?? "",
+            ...(imageModelKey && IMAGE_MODELS[imageModelKey] ? { image_model: IMAGE_MODELS[imageModelKey] } : {}),
           }),
         });
 
@@ -201,6 +207,7 @@ export function useStoryImages(imageStyle: string, sessionId: string, intervalSe
             previous_image_data: prevImage?.data ?? "",
             previous_image_mime_type: prevImage?.mimeType ?? "image/png",
             previous_scene_description: prevImage?.sceneDescription ?? "",
+            ...(imageModelKey && IMAGE_MODELS[imageModelKey] ? { image_model: IMAGE_MODELS[imageModelKey] } : {}),
           }),
         });
 

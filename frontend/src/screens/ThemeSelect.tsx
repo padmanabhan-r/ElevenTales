@@ -10,7 +10,7 @@ interface Props {
   character: Character;
   onBack: () => void;
   onHome: () => void;
-  onConfirm: (theme: string, propImage?: string, propDescription?: string, propImageMimeType?: string) => void;
+  onConfirm: (theme: string, propImage?: string, propDescription?: string, propImageMimeType?: string, imageModel?: string) => void;
 }
 
 /* ── Theme tiles ── */
@@ -426,6 +426,7 @@ const ThemeSelect = ({ character, onBack, onHome, onConfirm }: Props) => {
   const [cameraPreview, setCameraPreview] = useState<Preview | null>(null);
   const [contentWarning, setContentWarning] = useState<string | null>(null);
   const [goLoading, setGoLoading] = useState(false);
+  const [imageModel, setImageModel] = useState<"nano-banana" | "nano-banana-2">("nano-banana-2");
 
   const toggleExpand = (id: OptionId) => {
     setExpanded(id);
@@ -509,11 +510,11 @@ const ThemeSelect = ({ character, onBack, onHome, onConfirm }: Props) => {
         setGoLoading(false);
       }
       setContentWarning(null);
-      onConfirm(text || selectedTheme || "");
+      onConfirm(text || selectedTheme || "", undefined, undefined, undefined, imageModel);
     } else if (expanded === "camera" && cameraPreview?.imageData) {
-      onConfirm("camera_prop", cameraPreview.imageData, cameraPreview.label ?? undefined, cameraPreview.mimeType || "image/jpeg");
+      onConfirm("camera_prop", cameraPreview.imageData, cameraPreview.label ?? undefined, cameraPreview.mimeType || "image/jpeg", imageModel);
     } else if (expanded === "sketch" && sketchPreview?.imageData) {
-      onConfirm("sketch", sketchPreview.imageData, sketchPreview.label ?? undefined, sketchPreview.mimeType || "image/jpeg");
+      onConfirm("sketch", sketchPreview.imageData, sketchPreview.label ?? undefined, sketchPreview.mimeType || "image/jpeg", imageModel);
     }
   };
 
@@ -557,8 +558,25 @@ const ThemeSelect = ({ character, onBack, onHome, onConfirm }: Props) => {
           )}
         </motion.div>
 
+        {/* Image quality toggle */}
+        <div className="max-w-2xl w-full mx-auto mb-1 flex items-center justify-center gap-2">
+          <span className="font-body text-xs text-foreground/50">🖼️ Image Quality:</span>
+          <button
+            onClick={() => setImageModel("nano-banana")}
+            className={`px-3 py-1 rounded-full text-xs font-display font-bold transition-all ${imageModel === "nano-banana" ? "bg-primary text-primary-foreground" : "bg-muted/50 text-muted-foreground hover:bg-muted"}`}
+          >
+            Nano Banana ⚡ <span className="font-normal opacity-70">faster</span>
+          </button>
+          <button
+            onClick={() => setImageModel("nano-banana-2")}
+            className={`px-3 py-1 rounded-full text-xs font-display font-bold transition-all ${imageModel === "nano-banana-2" ? "bg-primary text-primary-foreground" : "bg-muted/50 text-muted-foreground hover:bg-muted"}`}
+          >
+            Nano Banana 2 ✨ <span className="font-normal opacity-70">rich visuals</span>
+          </button>
+        </div>
+
         {/* Option cards */}
-        <div className={`max-w-2xl w-full mx-auto flex flex-col flex-1 gap-4 overflow-y-auto min-h-0 pb-2 ${expanded ? "justify-start pt-2" : "justify-center"}`}>
+        <div className={`max-w-2xl w-full mx-auto flex flex-col flex-1 gap-4 overflow-hidden min-h-0 pb-1 ${expanded ? "justify-start pt-1" : "justify-center"}`}>
           {(expanded ? OPTION_CARDS.filter(c => c.id === expanded) : OPTION_CARDS).map((card, i) => {
             const isExpanded = expanded === card.id;
             const isLocked = !!card.locked;
@@ -609,15 +627,6 @@ const ThemeSelect = ({ character, onBack, onHome, onConfirm }: Props) => {
                         </p>
                       )}
                     </div>
-                    {!isLocked && (
-                      <motion.span
-                        className="ml-auto text-muted-foreground text-xl"
-                        animate={{ rotate: isExpanded ? 180 : 0 }}
-                        transition={{ duration: 0.3 }}
-                      >
-                        ▾
-                      </motion.span>
-                    )}
                   </button>
 
                   {/* Expanded content */}

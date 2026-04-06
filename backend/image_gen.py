@@ -12,7 +12,7 @@ from characters import get_character
 
 router = APIRouter()
 
-IMAGE_MODEL = os.environ.get("IMAGE_MODEL", "gemini-2.5-flash-image")
+IMAGE_MODEL = os.environ.get("IMAGE_MODEL", "gemini-3.1-flash-image-preview")
 EXTRACT_MODEL = "gemini-2.5-flash-lite"
 
 _CHILD_SAFETY_SETTINGS = [
@@ -87,14 +87,16 @@ async def _generate_image(
     previous_image_data: str = "",
     previous_image_mime_type: str = "image/png",
     previous_scene_description: str = "",
+    model: str = "",
 ) -> tuple[str, str]:
     """Generate image using Gemini AI Studio API key."""
     client = _get_client()
+    resolved_model = model or IMAGE_MODEL
     last_exc: Exception | None = None
     for attempt in range(2):
         try:
             response = await client.aio.models.generate_content(
-                model=IMAGE_MODEL,
+                model=resolved_model,
                 contents=_build_contents(prompt, previous_image_data, previous_image_mime_type, previous_scene_description),
                 config=types.GenerateContentConfig(
                     response_modalities=["IMAGE", "TEXT"],
@@ -260,7 +262,7 @@ async def sketch_preview(request: SketchPreviewRequest) -> SketchPreviewResponse
             ),
             timeout=15.0,
         )
-        label = label_result.text.strip().rstrip(".")
+        label = (label_result.text or "").strip().rstrip(".")
         print(f"[sketch-preview] Label: {label!r}")
 
         if not await _is_safe_for_children(label):
@@ -294,6 +296,7 @@ class ImageRequest(BaseModel):
     previous_image_data: str = ""
     previous_image_mime_type: str = "image/png"
     previous_scene_description: str = ""
+    image_model: str = ""
 
 
 class ImageResponse(BaseModel):
@@ -309,7 +312,8 @@ async def generate_scene_image(request: ImageRequest):
 
     try:
         scene_text = _build_scene_prompt(request.scene_description, request.story_context)
-        print(f"[image_gen] Scene: {request.scene_description[:80]}...")
+        model = request.image_model or IMAGE_MODEL
+        print(f"[image_gen] Scene: {request.scene_description[:80]}... model={model}")
 
         prompt = f"{SAFETY_PREFIX}{request.image_style}. {scene_text}"
 
@@ -318,6 +322,7 @@ async def generate_scene_image(request: ImageRequest):
             request.previous_image_data,
             request.previous_image_mime_type,
             request.previous_scene_description,
+            model,
         )
 
         return ImageResponse(

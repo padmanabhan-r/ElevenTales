@@ -18,6 +18,7 @@ const App = () => {
   const [propImage, setPropImage] = useState<string | undefined>();
   const [propDescription, setPropDescription] = useState<string | undefined>();
   const [propImageMimeType, setPropImageMimeType] = useState<string | undefined>();
+  const [imageModel, setImageModel] = useState<string | undefined>();
   const [muted, setMuted] = useState(false);
   // Custom characters created this session — passed down so they appear immediately
   const [sessionCustomChars, setSessionCustomChars] = useState<Character[]>([]);
@@ -30,11 +31,12 @@ const App = () => {
     setScreen("theme-select");
   };
 
-  const handleThemeConfirm = (t: string, img?: string, desc?: string, mimeType?: string) => {
+  const handleThemeConfirm = (t: string, img?: string, desc?: string, mimeType?: string, model?: string) => {
     setTheme(t);
     setPropImage(img);
     setPropDescription(desc);
     setPropImageMimeType(mimeType);
+    setImageModel(model);
     setScreen("story");
   };
 
@@ -48,6 +50,7 @@ const App = () => {
     setPropImage(undefined);
     setPropDescription(undefined);
     setPropImageMimeType(undefined);
+    setImageModel(undefined);
     setScreen("theme-select");
   };
 
@@ -111,6 +114,7 @@ const App = () => {
           propImage={propImage}
           propDescription={propDescription}
           propImageMimeType={propImageMimeType}
+          imageModel={imageModel}
           onBack={handleBackFromStory}
           onHome={handleBackToLanding}
         />

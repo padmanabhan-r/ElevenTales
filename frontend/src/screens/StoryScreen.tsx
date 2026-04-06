@@ -185,6 +185,7 @@ interface Props {
   propImage?: string;
   propDescription?: string;
   propImageMimeType?: string;
+  imageModel?: string;
   onBack: () => void;
   onHome: () => void;
 }
@@ -225,7 +226,7 @@ const STATUS_TEXT: Record<string, string> = {
   ended: "The end! That was a great story!",
 };
 
-const StoryScreen = ({ character, theme, propImage, propDescription, propImageMimeType, onBack, onHome }: Props) => {
+const StoryScreen = ({ character, theme, propImage, propDescription, propImageMimeType, imageModel, onBack, onHome }: Props) => {
   const sessionIdRef = useRef<string>(crypto.randomUUID());
   const intervalSeconds = 8;
 
@@ -245,6 +246,7 @@ const StoryScreen = ({ character, theme, propImage, propDescription, propImageMi
     character.imageStyle,
     sessionIdRef.current,
     intervalSeconds,
+    imageModel,
   );
 
   // SFX — one theme-matched sound pre-fetched at session start, plays on each reveal
