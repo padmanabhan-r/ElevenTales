@@ -25,6 +25,10 @@ backend/.env
 backend/character_ids.json
 backend/custom_characters.json
 
+# Replit config (can contain injected secrets via [userenv.shared])
+.replit
+replit.nix
+
 # OS
 .DS_Store
 Thumbs.db
