@@ -1,29 +1,16 @@
 # ElevenTales
 
-[![Live App](https://img.shields.io/badge/Live%20App-ElevenTales-orange?style=flat&logo=googlechrome&logoColor=white)](https://replit.com)
-[![ElevenLabs](https://img.shields.io/badge/ElevenLabs%20Conv%20AI-FF6B35?style=flat&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMTIgMkM2LjQ4IDIgMiA2LjQ4IDIgMTJzNC40OCAxMCAxMCAxMCAxMC00LjQ4IDEwLTEwUzE3LjUyIDIgMTIgMnoiIGZpbGw9IndoaXRlIi8+PC9zdmc+&logoColor=white)](https://elevenlabs.io)
-[![Voice Design](https://img.shields.io/badge/Voice%20Design-ElevenLabs-FF6B35?style=flat&logoColor=white)](https://elevenlabs.io/voice-design)
-[![Voice Cloning](https://img.shields.io/badge/Voice%20Cloning%20IVC-ElevenLabs-FF6B35?style=flat&logoColor=white)](https://elevenlabs.io/voice-cloning)
-[![Python](https://img.shields.io/badge/Python%203.13-3776AB?style=flat&logo=python&logoColor=white)](https://www.python.org)
-[![React](https://img.shields.io/badge/React%2018-61DAFB?style=flat&logo=react&logoColor=black)](https://react.dev)
-[![Replit](https://img.shields.io/badge/Deployed%20on-Replit-F26207?style=flat&logo=replit&logoColor=white)](https://replit.com)
-
+[![Live App](https://img.shields.io/badge/Live%20App-eleventales.replit.app-orange?style=flat&logo=googlechrome&logoColor=white)](https://eleventales.replit.app) [![ElevenLabs](https://img.shields.io/badge/ElevenLabs%20Conv%20AI-FF6B35?style=flat&logoColor=white)](https://elevenlabs.io) [![Voice Design](https://img.shields.io/badge/Voice%20Design-FF6B35?style=flat&logoColor=white)](https://elevenlabs.io/voice-design) [![Voice Cloning](https://img.shields.io/badge/Voice%20Cloning%20IVC-FF6B35?style=flat&logoColor=white)](https://elevenlabs.io/voice-cloning) [![Python](https://img.shields.io/badge/Python%203.13-3776AB?style=flat&logo=python&logoColor=white)](https://www.python.org) [![React](https://img.shields.io/badge/React%2018-61DAFB?style=flat&logo=react&logoColor=black)](https://react.dev)
 **ElevenTales turns a child's words into a living, breathing story.**
 
-A voice-first interactive storytelling app for kids, powered by **ElevenLabs Conversational AI**, **Voice Design**, and **Voice Cloning**.
+A voice-first interactive storytelling app for kids, powered by **ElevenLabs Conversational AI**, **Voice Design**, **Voice Cloning**, and **Nano Banana 2** 🍌.
 
-A child picks a storyteller, says "dragons" or "my toy dinosaur" or "space" — and a real story begins. Not pre-written. Not scripted. Alive, branching in real time around whatever the child says next. The storyteller listens, reacts, adapts, and keeps the adventure growing.
+Children simply pick a storyteller, then pick a theme — hold up a toy or draw an idea — and begin a **real-time conversation** where the AI and child co-create a story together. The storyteller speaks, listens, adapts to interruptions, and generates illustrations as the adventure unfolds.
 
-Every voice is distinct. Children can **design their own storyteller** from scratch, shaping a voice that has never existed before. They can **clone their own voice** and become the narrator. The story is always theirs. **ElevenLabs makes it real.**
-
-Built for the **ElevenHacks** hackathon.
+Every voice is distinct. **Design a storyteller** from scratch, shaping a voice that has never existed before. **Clone a voice** and become the narrator. The story is always theirs. **ElevenLabs makes it real.**
 
 <p align="center">
-  <a href="#">
-    <img src="images/0-eleventales-landing.png" alt="ElevenTales Demo" width="700"/>
-  </a>
-  <br/>
-  <em>▶ Watch the demo</em>
+  <img src="images/0-eleventales-landing.png" alt="ElevenTales Demo" width="700"/>
 </p>
 
 ## Contents
@@ -45,7 +32,6 @@ Built for the **ElevenHacks** hackathon.
 - [Built With](#built-with)
 - [Try It Out](#try-it-out)
 - [Running Locally](#running-locally)
-- [Roadmap](#roadmap)
 
 ---
 
@@ -91,11 +77,7 @@ Choose from adventure themes or life-skills topics — or type **anything their 
   <img src="images/3-pick-theme.png" alt="Pick a Theme" width="700"/>
 </p>
 
-If a custom theme isn't appropriate for children, a friendly message blocks it before the story starts.
-
-<p align="center">
-  <img src="images/9-safety-filter.png" alt="Content Safety Filter" width="700"/>
-</p>
+If a custom theme isn't appropriate for children, a friendly message blocks it before the story starts. Safety filters are applied to all story entry points.
 
 ---
 
@@ -155,10 +137,10 @@ AI:    And with one enormous sneeze, the dragon launched them both
 
 Barge-in is native — ElevenLabs detects when the child starts speaking, stops the current narration, and weaves their words into the next story beat.
 
-As the story unfolds, **illustrations appear automatically**. The agent decides the right visual moment — a new location, character reveal, or dramatic transformation — and generates an image from its own scene description, so it always matches what was just narrated. Each new image receives the **previous image as context**, keeping characters and art style consistent across every scene.
+As the story unfolds, **illustrations appear automatically**. The agent decides the right visual moment — a new location, character reveal, or dramatic transformation — and generates an image from its own scene description, so it always matches what was just narrated. Each new image is painted by **Nano Banana** 🍌 and receives the **previous image as context**, keeping characters and art style consistent across every scene.
 
 <p align="center">
-  <img src="images/10-story-screen.png" alt="Story Screen" width="700"/>
+  <img src="images/8-story-screen.png" alt="Story Screen" width="700"/>
 </p>
 
 ---
@@ -174,27 +156,7 @@ The badge appears in the centre of the screen and auto-dismisses after a few sec
 Badges are saved with the story and shown in the **Story Recap** and **Past Adventures gallery**.
 
 <p align="center">
-  <img src="images/8-creative-badge.png" alt="Creative Badge Award" width="700"/>
-</p>
-
----
-
-## Story Recap
-
-When the adventure ends, the app generates a **storybook recap**.
-
-All session images are sent to Gemini, which generates a storybook title and a narration for each scene. Original session images are reused — no new images generated during recap.
-
-Children get a scrollable storybook with title, illustrated scenes, narration captions, and creativity badges. All saved to the **Past Adventures gallery**.
-
-<p align="center">
-  <img src="images/11-story-recap.png" alt="Story Recap Storybook" width="700"/>
-</p>
-
-All completed stories are saved locally and accessible from the landing page. Tap any card to re-read the full storybook.
-
-<p align="center">
-  <img src="images/12-past-adventures.png" alt="Past Adventures Gallery" width="700"/>
+  <img src="images/9-creative-badge.png" alt="Creative Badge Award" width="700"/>
 </p>
 
 ---
@@ -202,7 +164,7 @@ All completed stories are saved locally and accessible from the landing page. Ta
 ## Voice Design — Build a Storyteller
 
 <p align="center">
-  <img src="images/13-voice-design.png" alt="Voice Design Screen" width="700"/>
+  <img src="images/10-voice-design.png" alt="Voice Design Screen" width="700"/>
 </p>
 
 1. Go to **My Created Storytellers** → **Design a Voice**
@@ -216,7 +178,7 @@ All completed stories are saved locally and accessible from the landing page. Ta
 ## Voice Cloning — Become the Storyteller
 
 <p align="center">
-  <img src="images/14-voice-cloning.png" alt="Voice Cloning Screen" width="700"/>
+  <img src="images/11-voice-cloning.png" alt="Voice Cloning Screen" width="700"/>
 </p>
 
 1. Go to **My Created Storytellers** → **Clone a Voice**
@@ -239,7 +201,8 @@ ElevenLabs is not a feature in ElevenTales. It is the foundation.
 | **Dynamic Variables** | `{{theme}}` is injected at session start — the child's chosen theme, camera prop label, or sketch description. The agent receives this before speaking its first word and builds the entire story around it. |
 | **Client Tools** | The agent calls `generate_illustration` at the exact dramatic moment it chooses to trigger a Gemini scene illustration. It calls `award_badge` silently when a child earns one. Both tools fire in the browser — no round-trip to the backend. |
 | **Sound Effects Generation** | Scene reveal sound effects are generated live via the ElevenLabs Sound Effects API — a soft magical chime as each illustration appears. |
-| **Multilingual TTS** | Built-in characters speak in English (`eleven_flash_v2`), Hindi, and Tamil (`eleven_multilingual_v2`). The storyteller's language is the child's language. |
+| **Expressive Voice Model** | All agents use `eleven_v3_conversational` with **expressive mode** enabled — voices convey genuine emotion, not flat narration. Excitement, suspense, warmth, and wonder come through naturally as the story unfolds. |
+| **Multilingual TTS** | Built-in characters speak in English, Hindi, and Tamil via `eleven_v3_conversational`. The storyteller's language is the child's language. |
 | **`@11labs/client` SDK** | The frontend connects directly to the ElevenLabs WebSocket using the official SDK — real-time audio, barge-in, and tool call dispatch, all handled natively. |
 
 ---
@@ -248,12 +211,12 @@ ElevenLabs is not a feature in ElevenTales. It is the foundation.
 
 - **Live voice conversations** — children talk, the storyteller listens and responds in real time; no typing ever
 - **Barge-in support** — children can interrupt and redirect the story at any point mid-sentence
-- **5 built-in storytellers** — English, Hindi, and Tamil characters with distinct AI-designed voices
+- **5 built-in storytellers** — English, Hindi, and Tamil characters with distinct AI-designed voices, all using `eleven_v3_conversational` with **expressive mode**
 - **Voice Design** — describe a character; hear 3 generated voice previews; create a custom storyteller instantly
 - **Voice Cloning** — clone your own voice and become the narrator of your own story
 - **Magic Camera** — point at any toy or object; the story builds itself around it with a storybook illustration
 - **Sketch Mode** — draw anything; it becomes the story's centrepiece, illustrated in storybook style
-- **Dynamic scene illustrations** — Gemini generates storybook art as the story unfolds, each scene visually continuous with the last
+- **Dynamic scene illustrations** — **Nano Banana** 🍌 generates storybook art as the story unfolds, each scene visually continuous with the last
 - **Dual illustration trigger** — agent calls `generate_illustration` at dramatic moments; a frontend fallback fires if the agent pauses
 - **Creativity badges** — silently awarded for genuine creative contribution (naming a character, inventing a twist — not just saying "yes")
 - **Story recap** — full illustrated storybook with a generated title at the end of every session
@@ -302,7 +265,7 @@ The browser calls `/api/session` → receives a short-lived signed WebSocket URL
 
 ### Illustration Pipeline
 
-The agent decides the visual moment, writes its own scene description, and fires `generate_illustration`. The frontend sends the description + the previous image to `/api/image`, which calls Gemini for a storybook illustration. Each image seeds the next — visual continuity is maintained without any external state.
+The agent decides the visual moment, writes its own scene description, and fires `generate_illustration`. The frontend sends the description + the previous image to `/api/image`, which calls **Nano Banana** 🍌 for a storybook illustration. Each image seeds the next — visual continuity is maintained without any external state.
 
 ---
 
@@ -315,9 +278,8 @@ The agent decides the visual moment, writes its own scene description, and fires
 | **ElevenLabs Voice Design API** | Generate 3 voice previews from a text description; create custom storyteller voices |
 | **ElevenLabs Instant Voice Cloning (IVC)** | Clone a child's voice into a full storyteller agent |
 | **ElevenLabs Sound Effects API** | Live-generated audio chimes on scene reveal |
-| `eleven_flash_v2` | English character TTS |
-| `eleven_multilingual_v2` | Hindi and Tamil character TTS |
-| `gemini-3.1-flash-image-preview` | Storybook scene illustration |
+| `eleven_v3_conversational` + expressive mode | TTS for all characters — conveys genuine emotion, warmth, and drama |
+| `gemini-3.1-flash-image-preview` (**Nano Banana 2** 🍌) | Storybook scene illustration |
 | `gemini-2.5-flash-lite` | Content moderation + story recap titles and narrations |
 | `gemini-2.5-flash` | LLM inside each ElevenLabs agent |
 
@@ -342,7 +304,7 @@ The agent decides the visual moment, writes its own scene description, and fires
 
 # Try It Out
 
-> **Live on Replit** — open the app, pick a storyteller, and speak.
+> **[https://eleventales.replit.app](https://eleventales.replit.app)** — open the app, pick a storyteller, and speak.
 
 1. Open the app on a device with a microphone
 2. Click **Begin Your Adventure** → pick a storyteller → choose a theme, use Magic Camera, or draw a Sketch
@@ -371,7 +333,7 @@ Create `backend/.env`:
 ```env
 ELEVENLABS_API_KEY=your-elevenlabs-key
 GEMINI_API_KEY=your-gemini-key
-IMAGE_MODEL=gemini-3.1-flash-image-preview
+IMAGE_MODEL=gemini-3.1-flash-image-preview  # Nano Banana 2 (default) or gemini-2.5-flash-image for Nano Banana
 ```
 
 ### 3. Create built-in characters (one-time)
@@ -404,20 +366,3 @@ Builds the frontend, starts FastAPI at `http://localhost:8080`.
 
 > On Replit: set secrets in the Secrets panel. `bash start.sh` works identically.
 
----
-
-# Roadmap
-
-The immediate focus is polish — refining agent prompts, hardening edge cases, and perfecting the end-to-end voice experience. Hindi and Tamil characters need more testing before they're ready for everyday use.
-
-Native **iOS and Android apps** are the natural next step — putting ElevenTales where children actually are, with proper mobile audio handling.
-
-| Feature | Notes |
-|---|---|
-| **World-language expansion** | Add Spanish, French, Mandarin storytellers — ElevenLabs multilingual models already support them |
-| **Rive Animated Characters** | Replace Framer Motion portraits with Rive state machine animations — real lip-sync tied to audio amplitude |
-| **Learning Mode** | Storyteller weaves curriculum goals (phonics, counting, colours) into the narrative without the child realising they're learning |
-| **Cloud Storage for Past Adventures** | Move from `localStorage` to cloud — stories persist across devices indefinitely |
-| **Parent Dashboard** | Session summaries, badge history, themes explored — a window into how your child's imagination works |
-| **Live Camera in Story Mode** | Keep the camera active during narration so the storyteller reacts to what it sees in real time |
-| **Multi-child profiles** | Each child gets their own storytellers, cloned voices, and adventure gallery |
