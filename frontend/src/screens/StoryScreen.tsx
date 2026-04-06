@@ -292,6 +292,14 @@ const StoryScreen = ({ character, theme, propImage, propDescription, propImageMi
     onBadgeAwarded: handleBadgeAwarded,
   });
 
+  // Prime image generation context with the prop image (camera / sketch mode) as soon as
+  // the session goes active. Not shown on canvas — used only as reference for the first scene.
+  useEffect(() => {
+    if (sessionState === "active" && propImage && propImageMimeType) {
+      seedPropImage(propImage, propImageMimeType, propDescription ?? "");
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessionState]);
 
   // Auto-save to gallery whenever the session ends — regardless of whether
   // the user clicked "End Story" or the WebSocket closed unexpectedly.

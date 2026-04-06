@@ -12,7 +12,7 @@ from characters import get_character
 
 router = APIRouter()
 
-IMAGE_MODEL = os.environ.get("IMAGE_MODEL", "gemini-3.1-flash-image-preview")
+IMAGE_MODEL = os.environ.get("IMAGE_MODEL", "gemini-2.5-flash-image")
 EXTRACT_MODEL = "gemini-2.5-flash-lite"
 
 _CHILD_SAFETY_SETTINGS = [

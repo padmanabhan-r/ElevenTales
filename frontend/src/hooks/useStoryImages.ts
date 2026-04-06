@@ -47,13 +47,12 @@ export function useStoryImages(imageStyle: string, sessionId: string, intervalSe
     setScenes((prev) => prev.filter((s) => s.status === "loaded"));
   }, []);
 
-  // Pre-seed the canvas with the prop's illustrated image (camera / sketch mode).
-  // Shows the image immediately for visual context only — intentionally does NOT update
-  // lastImageRef so the prop image is never used as context for story scene generation.
+  // Prime the generation context with the prop's illustrated image (camera / sketch mode).
+  // Does NOT show anything on the canvas — only sets lastImageRef so the first AI-generated
+  // scene can reference the child's drawing/camera image for visual continuity.
   const seedPropImage = useCallback((imageData: string, mimeType: string, description: string) => {
-    if (stoppedRef.current || sceneCountRef.current > 0) return;
-    const sceneId = `scene-${++sceneCountRef.current}`;
-    setScenes([{ id: sceneId, status: "loaded", imageData, mimeType, description }]);
+    if (stoppedRef.current) return;
+    lastImageRef.current = { data: imageData, mimeType, sceneDescription: description };
   }, []);
 
   const triggerImageGeneration = useCallback(
