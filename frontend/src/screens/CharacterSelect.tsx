@@ -66,13 +66,13 @@ const CharacterCard = ({
       </h3>
       <div className="flex items-center justify-center gap-1.5 mt-0.5">
         <p className="text-xs text-muted-foreground">{character.language}</p>
-        {character.clonedVoice ? (
+        {character.category === "custom" ? (
+          <span className="text-[10px] font-semibold font-body px-1.5 py-0.5 rounded-full bg-magic-pink/20 text-magic-pink border border-magic-pink/30 leading-none">
+            {character.clonedVoice ? "user cloned" : "user designed"}
+          </span>
+        ) : character.clonedVoice ? (
           <span className="text-[10px] font-semibold font-body px-1.5 py-0.5 rounded-full bg-accent/20 text-accent border border-accent/30 leading-none">
             cloned voice
-          </span>
-        ) : character.category === "custom" ? (
-          <span className="text-[10px] font-semibold font-body px-1.5 py-0.5 rounded-full bg-magic-pink/20 text-magic-pink border border-magic-pink/30 leading-none">
-            user designed
           </span>
         ) : (
           <span className="text-[10px] font-semibold font-body px-1.5 py-0.5 rounded-full bg-secondary/20 text-secondary border border-secondary/30 leading-none">
