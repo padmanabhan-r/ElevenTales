@@ -6,12 +6,36 @@ All notable changes to ElevenTales are documented here.
 
 ## [1.0.1] — 2026-04-07
 
-Patch release with a UI labeling fix and improved project documentation.
+First public release. Built for the ElevenHacks hackathon.
+
+### Core Features
+
+- **Voice conversations** — children talk to AI storyteller characters via ElevenLabs Conversational AI using signed session URLs, so raw API keys never reach the browser
+- **5 built-in characters** — Wizard Wally, Fairy Flora, Captain Coco (English), Dadi Maa (Hindi), and Raja Vikram (Tamil)
+- **Dynamic themes** — child-selected themes are injected into the storyteller's opening and system prompt using `{{theme}}`
+- **Storybook illustrations** — Gemini scene generation can be triggered by agent tool calls, with a frontend fallback timer to keep story visuals moving
+- **Illustration cooldown** — 8-second forced cooldown prevents duplicate image generation when tool calls and fallback timing overlap
+- **Magic Camera** — camera mode identifies a real-world object and uses it as a story prop with a seeded illustration
+- **Sketch Mode** — child drawings are transformed into storybook-style art and woven directly into the adventure
+- **Barge-in support** — children can interrupt the storyteller naturally mid-sentence
+- **Achievement badges** — the agent can silently award up to 3 creative badges per session
+- **Story recap** — end-of-session summary with title and scene-by-scene narrations
+- **Past Adventures** — previous stories are stored locally and shown in a replayable gallery
+- **Child-safe moderation** — Gemini Flash Lite screens themes and content before story content is spoken or shown
+
+### Voice Creation
+
+- **Voice Design flow** — multi-step custom storyteller creation: describe character, generate 3 previews, pick a voice, choose name and emoji, then save
+- **Voice Cloning flow** — user voice cloning support to turn a recorded voice into a storyteller
+- **Custom character persistence** — created storytellers are stored server-side in `custom_characters.json` and loaded on app startup
+- **Tabbed character selection** — built-in storytellers and user-created storytellers are separated in Character Select
+- **Emoji avatar fallback** — custom characters use emoji avatars in Story Screen when no image URL exists
+- **409 preview recovery** — if a voice preview was already consumed, the UI sends the user back to restart with a clear message
+- **Correct custom badge labels** — Character Select shows `user cloned` for cloned custom voices and `user designed` for designed custom voices
 
 ### Fixed
 
-- **Custom voice badge labeling** — custom storytellers now show the correct badge in Character Select:
-  cloned custom voices display **user cloned**, while designed custom voices display **user designed**
+- **Custom voice badge labeling** — corrected the Character Select badge logic for custom cloned vs designed voices
 
 ### Documentation
 
@@ -19,47 +43,17 @@ Patch release with a UI labeling fix and improved project documentation.
 - **Product screenshots added** — added a full image set covering landing, character selection, theme selection, Magic Camera, Sketch Mode, story scenes, badge awards, Voice Design, and Voice Cloning flows
 - **README polish** — fixed the opening line spacing so it no longer runs into the badge row
 
----
-
-## [1.0.0] — 2026-04-05
-
-First public release. Built for the ElevenHacks hackathon.
-
-### Core Features
-
-- **Voice conversations** — children talk to AI storyteller characters via ElevenLabs Conversational AI (signed URL auth, no API key in browser)
-- **5 built-in characters** — Wizard Wally, Fairy Flora, Captain Coco (English), Dadi Maa (Hindi), Raja Vikram (Tamil)
-- **ElevenLabs Voice Design** — unique voices created per character via the Voice Design API
-- **Dynamic themes** — child picks a story theme; `{{theme}}` injected into agent's first message and system prompt
-- **Storybook illustrations** — Gemini image generation triggered by agent tool calls and a frontend fallback timer
-- **Illustration cooldown** — 8-second force cooldown prevents rapid-fire double generation when tool call and fallback fire together
-- **Magic Camera** — Gemini identifies a real-world object from camera; builds the story around it with a seeded illustration
-- **Sketch Mode** — child draws something; Gemini illustrates it in storybook style and weaves it into the story
-- **Barge-in** — children can interrupt the narrator naturally mid-sentence
-- **Achievement badges** — silently awarded by the agent when children contribute creative ideas (max 3 per session)
-- **Story recap** — illustrated summary with title and per-scene narrations at session end
-- **Past Adventures** — localStorage gallery of all previous story sessions
-- **Child-safe moderation** — theme and content moderation via Gemini Flash Lite before any story content is spoken or shown
-
-### Voice Design (Custom Characters)
-
-- **VoiceDesignScreen** — multi-step flow: describe character → generate 3 voice previews → pick one → name + emoji → save
-- **Collapsible emoji picker** — 100+ emoji across categories; auto-closes on selection
-- **Custom character persistence** — saved server-side in `custom_characters.json`; loaded on every app start
-- **My Created Storytellers tab** — tabbed CharacterSelect screen separates built-in from user-designed characters
-- **Custom character avatar** — emoji fallback in StoryScreen when no image URL is set
-- **409 error handling** — if a voice preview has already been used, user is sent back to step 1 with a clear message
-
 ### Agent Setup
 
-- `setup_voices.py` with `--char` and `--force` flags for iterating on individual characters
-- Agent config: `gemini-2.5-flash` LLM, `eleven_flash_v2` / `eleven_multilingual_v2` TTS, temperature `0.0`, turn timeout `7.0s`
-- Short-burst narration rule: 2–3 sentences max before pausing for the child
-- `generate_illustration` and `award_badge` tools registered inside `prompt` config
-- `first_messages.md` — theme-dynamic opening lines for all 5 built-in characters
+- `setup_voices.py` supports `--char` and `--force` for iterating on individual built-in storytellers
+- Built-in agent config uses `gemini-2.5-flash` with `eleven_flash_v2` / `eleven_multilingual_v2`, `temperature 0.0`, and `7.0s` turn timeout
+- Narration is tuned for short bursts of 2 to 3 sentences before pausing for the child
+- `generate_illustration` and `award_badge` are registered as agent tools
+- `first_messages.md` provides theme-dynamic opening lines for the built-in characters
 
 ### Infrastructure
 
-- FastAPI backend with dual ElevenLabs API key fallback (primary + backup)
-- Replit deployment via `start.sh` + `.replit` config
-- `custom_characters.json` and `character_ids.json` gitignored
+- **FastAPI backend** — serves signed ElevenLabs session URLs, image generation, sound effects, recap generation, voice design, and voice cloning endpoints
+- **Dual-key ElevenLabs fallback** — backend can switch to a backup API key on quota or auth failures
+- **Single-process deployment** — `start.sh` builds the frontend, copies it into the backend bundle, syncs Python deps, and starts Uvicorn
+- **Tracked secret protection** — runtime secrets stay in env files or platform secret stores, while `custom_characters.json`, `character_ids.json`, `.replit`, and env files are excluded from version control
