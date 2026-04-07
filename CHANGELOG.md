@@ -4,6 +4,23 @@ All notable changes to ElevenTales are documented here.
 
 ---
 
+## [1.0.1] — 2026-04-07
+
+Patch release with a UI labeling fix and improved project documentation.
+
+### Fixed
+
+- **Custom voice badge labeling** — custom storytellers now show the correct badge in Character Select:
+  cloned custom voices display **user cloned**, while designed custom voices display **user designed**
+
+### Documentation
+
+- **README refresh** — expanded and reorganized the project overview, ElevenLabs feature coverage, and Replit deployment notes
+- **Product screenshots added** — added a full image set covering landing, character selection, theme selection, Magic Camera, Sketch Mode, story scenes, badge awards, Voice Design, and Voice Cloning flows
+- **README polish** — fixed the opening line spacing so it no longer runs into the badge row
+
+---
+
 ## [1.0.0] — 2026-04-05
 
 First public release. Built for the ElevenHacks hackathon.
