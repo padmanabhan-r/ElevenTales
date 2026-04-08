@@ -33,6 +33,7 @@ backend/custom_characters.json
 .replit
 replit.nix
 .local/
+attached_assets/
 
 # OS
 .DS_Store
