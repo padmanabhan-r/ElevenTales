@@ -33,34 +33,17 @@ const PreviewCard = ({
   index,
   item,
   selected,
+  playing,
   onSelect,
+  onTogglePlay,
 }: {
   index: number;
   item: PreviewItem;
   selected: boolean;
+  playing: boolean;
   onSelect: () => void;
+  onTogglePlay: () => void;
 }) => {
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const [playing, setPlaying] = useState(false);
-
-  const togglePlay = () => {
-    if (!audioRef.current) {
-      const bytes = Uint8Array.from(atob(item.audio_base64), (c) => c.charCodeAt(0));
-      const blob = new Blob([bytes], { type: "audio/mpeg" });
-      const url = URL.createObjectURL(blob);
-      audioRef.current = new Audio(url);
-      audioRef.current.onended = () => setPlaying(false);
-    }
-    if (playing) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
-      setPlaying(false);
-    } else {
-      audioRef.current.play();
-      setPlaying(true);
-    }
-  };
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
@@ -89,7 +72,7 @@ const PreviewCard = ({
 
       {/* Play button */}
       <button
-        onClick={(e) => { e.stopPropagation(); togglePlay(); }}
+        onClick={(e) => { e.stopPropagation(); onTogglePlay(); }}
         className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 transition-colors ${
           playing ? "bg-primary text-white" : "bg-muted/50 hover:bg-primary/20 text-foreground"
         }`}
@@ -109,6 +92,8 @@ const VoiceDesignScreen = ({ onBack, onCreated }: Props) => {
   const [guidanceScale, setGuidanceScale] = useState(30);
   const [previews, setPreviews] = useState<PreviewItem[]>([]);
   const [selectedPreviewId, setSelectedPreviewId] = useState<string | null>(null);
+  const [playingPreviewId, setPlayingPreviewId] = useState<string | null>(null);
+  const audioRefs = useRef<Record<string, HTMLAudioElement>>({});
   const [loadingPreviews, setLoadingPreviews] = useState(false);
   const [previewError, setPreviewError] = useState("");
 
@@ -133,6 +118,9 @@ const VoiceDesignScreen = ({ onBack, onCreated }: Props) => {
     setLoadingPreviews(true);
     setPreviews([]);
     setSelectedPreviewId(null);
+    setPlayingPreviewId(null);
+    Object.values(audioRefs.current).forEach((a) => { a.pause(); a.src = ""; });
+    audioRefs.current = {};
     try {
       const res = await fetch(`${API_BASE}/api/voice-design/preview`, {
         method: "POST",
@@ -154,6 +142,39 @@ const VoiceDesignScreen = ({ onBack, onCreated }: Props) => {
     } finally {
       setLoadingPreviews(false);
     }
+  };
+
+  // ── Audio playback ─────────────────────────────────────────────────────────
+
+  const stopAllAudio = () => {
+    Object.values(audioRefs.current).forEach((a) => { a.pause(); a.currentTime = 0; });
+    setPlayingPreviewId(null);
+  };
+
+  const handleTogglePlay = (id: string, audio_base64: string) => {
+    // Stop currently playing audio
+    if (playingPreviewId && playingPreviewId !== id) {
+      const prev = audioRefs.current[playingPreviewId];
+      if (prev) { prev.pause(); prev.currentTime = 0; }
+    }
+
+    if (playingPreviewId === id) {
+      // Pause current
+      audioRefs.current[id]?.pause();
+      setPlayingPreviewId(null);
+      return;
+    }
+
+    // Create audio element on first play
+    if (!audioRefs.current[id]) {
+      const bytes = Uint8Array.from(atob(audio_base64), (c) => c.charCodeAt(0));
+      const blob = new Blob([bytes], { type: "audio/mpeg" });
+      audioRefs.current[id] = new Audio(URL.createObjectURL(blob));
+      audioRefs.current[id].onended = () => setPlayingPreviewId(null);
+    }
+
+    audioRefs.current[id].play();
+    setPlayingPreviewId(id);
   };
 
   // ── Avatar preview ─────────────────────────────────────────────────────────
@@ -397,7 +418,9 @@ const VoiceDesignScreen = ({ onBack, onCreated }: Props) => {
                       index={i}
                       item={p}
                       selected={selectedPreviewId === p.generated_voice_id}
+                      playing={playingPreviewId === p.generated_voice_id}
                       onSelect={() => setSelectedPreviewId(p.generated_voice_id)}
+                      onTogglePlay={() => handleTogglePlay(p.generated_voice_id, p.audio_base64)}
                     />
                   ))}
 
@@ -406,7 +429,7 @@ const VoiceDesignScreen = ({ onBack, onCreated }: Props) => {
                     animate={{ opacity: 1 }}
                     whileTap={{ scale: 0.97 }}
                     disabled={!selectedPreviewId}
-                    onClick={() => setStep("details")}
+                    onClick={() => { stopAllAudio(); setStep("details"); }}
                     className="w-full py-3 rounded-2xl bg-primary text-white font-display font-bold text-base disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-md"
                   >
                     Next: Character Details →

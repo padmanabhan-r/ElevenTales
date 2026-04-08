@@ -228,7 +228,7 @@ const CharacterSelect = ({ onSelect, onBack, onVoiceDesign, onVoiceClone, custom
                   <h2 className="font-display text-base font-bold text-magic-teal mb-3 text-center">
                     🌍 English Storytellers
                   </h2>
-                  <div className="flex flex-wrap justify-center gap-4 sm:gap-6">
+                  <div className="flex flex-wrap justify-center gap-4 sm:gap-6 pt-4">
                     {englishChars.map((char, i) => (
                       <CharacterCard
                         key={char.id}
@@ -251,7 +251,7 @@ const CharacterSelect = ({ onSelect, onBack, onVoiceDesign, onVoiceClone, custom
                 </div>
 
                 {/* Other languages */}
-                <div className="flex flex-wrap justify-center gap-4 sm:gap-6 pb-2">
+                <div className="flex flex-wrap justify-center gap-4 sm:gap-6 pt-4 pb-2">
                   {otherChars.map((char, i) => (
                     <CharacterCard
                       key={char.id}
@@ -279,7 +279,7 @@ const CharacterSelect = ({ onSelect, onBack, onVoiceDesign, onVoiceClone, custom
               >
                 {/* Custom characters grid */}
                 {customChars.length > 0 ? (
-                  <div className="flex flex-wrap justify-center gap-4 sm:gap-6">
+                  <div className="flex flex-wrap justify-center gap-4 sm:gap-6 pt-4">
                     {customChars.map((char, i) => (
                       <CharacterCard
                         key={char.id}
