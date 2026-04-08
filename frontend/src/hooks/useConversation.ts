@@ -2,7 +2,7 @@ import { useState, useRef, useMemo, useEffect, useCallback } from "react";
 import { useConversation as useElevenLabsConversation } from "@elevenlabs/react";
 import { Character } from "@/characters";
 
-export type SessionState = "idle" | "connecting" | "active" | "error" | "ended";
+export type SessionState = "idle" | "connecting" | "active" | "error" | "ended" | "preview_ended";
 export type CharacterState = "idle" | "speaking" | "listening";
 
 export interface BadgeAward {
@@ -41,6 +41,7 @@ export function useConversation({
   const [sessionState, setSessionState] = useState<SessionState>("idle");
   const [isPaused, setIsPaused] = useState(false);
   const intentionalEndRef = useRef(false);
+  const activeStartRef = useRef<number | null>(null);
 
   // Keep latest callbacks in refs so closures never go stale
   const onGenerateIllustrationRef = useRef(onGenerateIllustration);
@@ -83,8 +84,14 @@ export function useConversation({
       }
     },
     onDisconnect: () => {
-      setSessionState(intentionalEndRef.current ? "ended" : "error");
+      if (intentionalEndRef.current) {
+        setSessionState("ended");
+      } else {
+        const activeMs = activeStartRef.current ? Date.now() - activeStartRef.current : 0;
+        setSessionState(activeMs >= 110_000 ? "preview_ended" : "error");
+      }
       intentionalEndRef.current = false;
+      activeStartRef.current = null;
     },
     onError: () => {
       setSessionState("error");
@@ -120,6 +127,7 @@ export function useConversation({
         signedUrl: signed_url,
         dynamicVariables: { theme: themeLabel },
       });
+      activeStartRef.current = Date.now();
       setSessionState("active");
     } catch {
       setSessionState("error");

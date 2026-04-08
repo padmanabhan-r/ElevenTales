@@ -175,6 +175,25 @@ function OurStoryCard({
   );
 }
 
+function PreviewEndedCard({ character }: { character: Character }) {
+  return (
+    <div className="flex-1 w-full h-full flex flex-col items-center justify-center gap-4 text-center px-8">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.92, y: 16 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        className="flex flex-col items-center gap-3"
+      >
+        <p className="text-5xl">⏳</p>
+        <p className="font-display text-3xl font-bold text-foreground">Preview Ended</p>
+        <p className="font-body text-base text-foreground/70 max-w-xs">
+          Your free preview with {character.name} has reached its 2-minute limit. Start a new story to continue the adventure!
+        </p>
+      </motion.div>
+    </div>
+  );
+}
+
 // ── Component ─────────────────────────────────────────────────────────────────
 
 const API_BASE = (import.meta.env.VITE_API_URL as string | undefined) ?? "";
@@ -224,6 +243,7 @@ const STATUS_TEXT: Record<string, string> = {
   active_listening: "I'm listening!",
   error: "Oops! Something went wrong. Try again!",
   ended: "The end! That was a great story!",
+  preview_ended: "Your free preview has ended!",
 };
 
 const StoryScreen = ({ character, theme, propImage, propDescription, propImageMimeType, imageModel, onBack, onHome }: Props) => {
@@ -310,7 +330,7 @@ const StoryScreen = ({ character, theme, propImage, propDescription, propImageMi
     const prev = prevSessionStateRef.current;
     prevSessionStateRef.current = sessionState;
     if (
-      (sessionState === "ended" || sessionState === "error") &&
+      (sessionState === "ended" || sessionState === "error" || sessionState === "preview_ended") &&
       (prev === "active" || prev === "ready" || prev === "connecting")
     ) {
       void saveToGallery(sessionIdRef.current, character, scenesRef.current, storyFirstLineRef.current, awardedBadgesRef.current);
@@ -320,7 +340,7 @@ const StoryScreen = ({ character, theme, propImage, propDescription, propImageMi
   // Re-save whenever a new image finishes loading after the session has ended.
   // This ensures the gallery has all images even if the user skips the recap.
   useEffect(() => {
-    if (sessionState !== "ended" && sessionState !== "error") return;
+    if (sessionState !== "ended" && sessionState !== "error" && sessionState !== "preview_ended") return;
     const loadedCount = scenes.filter((s) => s.status === "loaded" && s.imageData).length;
     if (loadedCount === 0) return;
     void saveToGallery(sessionIdRef.current, character, scenes, storyFirstLineRef.current, awardedBadgesRef.current);
@@ -454,7 +474,16 @@ const StoryScreen = ({ character, theme, propImage, propDescription, propImageMi
 
             {/* Buttons */}
             <div className="flex flex-col items-center gap-2" style={{ minHeight: "80px" }}>
-              {sessionState === "ended" ? (
+              {sessionState === "preview_ended" ? (
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center gap-2 text-center">
+                  <p className="font-body text-sm text-foreground/70 max-w-[220px]">
+                    Your free preview story has ended. Start a new one!
+                  </p>
+                  <button onClick={handleBack} className="px-6 py-2 rounded-full bg-primary text-primary-foreground font-body text-sm font-semibold hover:brightness-110 transition-all">
+                    ✨ Start a New Story
+                  </button>
+                </motion.div>
+              ) : sessionState === "ended" ? (
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center gap-2">
                   <button onClick={handleShowRecap} className="px-6 py-2 rounded-full bg-primary text-primary-foreground font-body text-sm font-semibold hover:brightness-110 transition-all">
                     📖 See our story!
@@ -559,6 +588,8 @@ const StoryScreen = ({ character, theme, propImage, propDescription, propImageMi
                     updateGalleryEntry(sessionIdRef.current, { recapTitle: t, narrations: n });
                   }}
                 />
+              ) : sessionState === "preview_ended" ? (
+                <PreviewEndedCard character={character} />
               ) : sessionState === "ended" ? (
                 <OurStoryCard
                   character={character}
