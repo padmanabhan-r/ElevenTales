@@ -22,7 +22,6 @@ const PreviewNotice = ({ onConfirm }: { onConfirm: () => void }) => (
         animate={{ scale: 1, opacity: 1, y: 0 }}
         transition={{ type: "spring", stiffness: 300, damping: 24 }}
       >
-        <div className="text-3xl mb-3">🍌</div>
         <h2 className="font-display text-lg font-bold text-primary mb-2">Free Preview</h2>
         <p className="font-body text-sm text-foreground/75 leading-relaxed mb-4">
           Stories are limited to <strong>2 minutes</strong> and image generation is throttled to conserve credits.
