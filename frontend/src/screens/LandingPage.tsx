@@ -1,4 +1,5 @@
-import { motion } from "framer-motion";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import heroBg from "@/assets/hero-bg.jpg";
 import FloatingElements from "@/components/FloatingElements";
 
@@ -6,8 +7,47 @@ interface Props {
   onStoryMode: () => void;
 }
 
+const PreviewNotice = ({ onConfirm }: { onConfirm: () => void }) => (
+  <AnimatePresence>
+    <motion.div
+      className="fixed inset-0 z-50 flex items-center justify-center px-4"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
+      <div className="absolute inset-0 bg-black/60" onClick={onConfirm} />
+      <motion.div
+        className="relative z-10 bg-background/95 backdrop-blur-md border border-primary/30 rounded-2xl p-6 max-w-sm w-full shadow-2xl text-center"
+        initial={{ scale: 0.85, opacity: 0, y: 20 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        transition={{ type: "spring", stiffness: 300, damping: 24 }}
+      >
+        <div className="text-3xl mb-3">🍌</div>
+        <h2 className="font-display text-lg font-bold text-primary mb-2">Free Preview</h2>
+        <p className="font-body text-sm text-foreground/75 leading-relaxed mb-4">
+          Stories are limited to <strong>2 minutes</strong> and image generation is throttled to conserve credits.
+          <br /><br />
+          For the best experience, choose <strong>Nano Banana ⚡</strong> over Nano Banana 2 — it's faster and uses fewer credits.
+        </p>
+        <button
+          onClick={onConfirm}
+          className="w-full py-3 rounded-full bg-primary text-primary-foreground font-display font-bold text-base hover:brightness-110 transition-all"
+        >
+          Got it — let's go! ✨
+        </button>
+      </motion.div>
+    </motion.div>
+  </AnimatePresence>
+);
+
 const LandingPage = ({ onStoryMode }: Props) => {
+  const [showNotice, setShowNotice] = useState(false);
+
+  const handleBegin = () => setShowNotice(true);
+  const handleConfirm = () => { setShowNotice(false); onStoryMode(); };
+
   return (
+    <>
     <div className="relative min-h-screen overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0">
@@ -85,7 +125,7 @@ const LandingPage = ({ onStoryMode }: Props) => {
             transition={{ delay: 1, duration: 0.5 }}
             whileHover={{ scale: 1.08 }}
             whileTap={{ scale: 0.95 }}
-            onClick={onStoryMode}
+            onClick={handleBegin}
             className="px-10 py-5 rounded-full bg-primary text-primary-foreground font-display text-xl sm:text-2xl font-bold magic-glow animate-glow-pulse hover:brightness-110 transition-all"
           >
             ✨ Begin Your Adventure ✨
@@ -109,6 +149,8 @@ const LandingPage = ({ onStoryMode }: Props) => {
 
       </div>
     </div>
+    {showNotice && <PreviewNotice onConfirm={handleConfirm} />}
+    </>
   );
 };
 

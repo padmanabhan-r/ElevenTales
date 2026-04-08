@@ -426,7 +426,8 @@ const ThemeSelect = ({ character, onBack, onHome, onConfirm }: Props) => {
   const [cameraPreview, setCameraPreview] = useState<Preview | null>(null);
   const [contentWarning, setContentWarning] = useState<string | null>(null);
   const [goLoading, setGoLoading] = useState(false);
-  const [imageModel, setImageModel] = useState<"nano-banana" | "nano-banana-2">("nano-banana-2");
+  const [imageModel, setImageModel] = useState<"nano-banana" | "nano-banana-2">("nano-banana");
+  const [showNb2Notice, setShowNb2Notice] = useState(false);
 
   const toggleExpand = (id: OptionId) => {
     setExpanded(id);
@@ -519,6 +520,7 @@ const ThemeSelect = ({ character, onBack, onHome, onConfirm }: Props) => {
   };
 
   return (
+    <>
     <div className="relative h-screen bg-sky-gradient overflow-hidden">
       <FloatingElements />
 
@@ -568,7 +570,7 @@ const ThemeSelect = ({ character, onBack, onHome, onConfirm }: Props) => {
             Nano Banana ⚡ <span className="font-normal opacity-70">faster</span>
           </button>
           <button
-            onClick={() => setImageModel("nano-banana-2")}
+            onClick={() => { setImageModel("nano-banana-2"); setShowNb2Notice(true); }}
             className={`px-3 py-1 rounded-full text-xs font-display font-bold transition-all ${imageModel === "nano-banana-2" ? "bg-primary text-primary-foreground" : "bg-muted/50 text-muted-foreground hover:bg-muted"}`}
           >
             Nano Banana 2 ✨ <span className="font-normal opacity-70">rich visuals</span>
@@ -894,6 +896,40 @@ const ThemeSelect = ({ character, onBack, onHome, onConfirm }: Props) => {
         </div>
       </div>
     </div>
+    {/* Nano Banana 2 notice modal */}
+    <AnimatePresence>
+      {showNb2Notice && (
+        <motion.div
+          className="fixed inset-0 z-50 flex items-center justify-center px-4"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        >
+          <div className="absolute inset-0 bg-black/60" onClick={() => setShowNb2Notice(false)} />
+          <motion.div
+            className="relative z-10 bg-background/95 backdrop-blur-md border border-primary/30 rounded-2xl p-6 max-w-sm w-full shadow-2xl text-center"
+            initial={{ scale: 0.85, opacity: 0, y: 20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            transition={{ type: "spring", stiffness: 300, damping: 24 }}
+          >
+            <div className="text-3xl mb-3">🍌✨</div>
+            <h2 className="font-display text-lg font-bold text-primary mb-2">Nano Banana 2 Selected</h2>
+            <p className="font-body text-sm text-foreground/75 leading-relaxed mb-4">
+              Nano Banana 2 produces <strong>richer, more detailed visuals</strong> — but it's slower and uses more credits to generate images.
+              <br /><br />
+              Consider switching to <strong>Nano Banana ⚡</strong> for a faster experience with lower credit usage.
+            </p>
+            <button
+              onClick={() => setShowNb2Notice(false)}
+              className="w-full py-3 rounded-full bg-primary text-primary-foreground font-display font-bold text-base hover:brightness-110 transition-all"
+            >
+              Got it ✨
+            </button>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+    </>
   );
 };
 
