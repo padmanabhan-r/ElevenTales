@@ -4,6 +4,29 @@ All notable changes to ElevenTales are documented here.
 
 ---
 
+## [1.0.2] — 2026-04-09
+
+### Added
+
+- **PDF story download** — Story Recap screen now has a "⬇ Download PDF" button that generates a full illustrated storybook as an A4 PDF, with a title page, per-scene illustration and narration pages, badges page, and a closing "The End" page
+- **Dynamic language detection in voice cloning** — ElevenLabs Scribe v2 STT detects the spoken language from the recorded audio sample; the preview is played back in the detected language using `eleven_multilingual_v2`, and a "Detected Language" badge is shown in the preview step; the language selector is pre-filled accordingly
+- **Graceful 2-minute preview timeout** — when a free session hits the 2-minute limit, a dedicated end screen appears with options to view the story recap or start a new adventure (instead of a silent disconnect)
+- **Preview voice cleanup** — IVC preview voices are automatically deleted when a user re-records, generates a new preview, or navigates away without completing character creation, preventing the 30-voice quota from filling up with orphaned clones
+- `DELETE /api/voice-clone/preview/{voice_id}` endpoint for best-effort IVC voice cleanup
+
+### Fixed
+
+- **"See our story" missing after timeout** — Story Recap and PDF download are now accessible after the 2-minute preview ends, not only after a full session
+- **Card hover clipping in My Created Storytellers** — added `pt-4` to card grids so the `whileHover={{ y: -8 }}` lift animation is no longer clipped by the container
+- **TypeScript errors in StoryScreen** — removed stale `"ready"` session state references, fixed `TargetAndTransition` type for Framer Motion, replaced `.at(-1)` with ES2021-compatible index access
+- **Voice clone preview text** — preview was always in English regardless of the user's language; now plays in the detected language with the correct TTS model
+
+### Changed
+
+- IVC voices are renamed from `ElevenTales - Clone Preview ...` to `ElevenTales - <CharacterName>` when a character is successfully created
+
+---
+
 ## [1.0.1] — 2026-04-07
 
 First public release. Built for the ElevenHacks hackathon.
