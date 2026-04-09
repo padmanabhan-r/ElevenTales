@@ -65,12 +65,24 @@ const VoiceCloneScreen = ({ onBack, onCreated }: Props) => {
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  // Track voiceId in a ref so the unmount cleanup can access the latest value
+  const voiceIdRef = useRef<string | null>(null);
+  const characterCreatedRef = useRef(false);
+
+  const deletePreviewVoice = (id: string) => {
+    // Fire-and-forget — best-effort cleanup, don't block the UI
+    fetch(`${API_BASE}/api/voice-clone/preview/${id}`, { method: "DELETE" }).catch(() => {});
+  };
 
   useEffect(() => {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
       streamRef.current?.getTracks().forEach((t) => t.stop());
       if (audioUrl) URL.revokeObjectURL(audioUrl);
+      // Delete the preview voice if the user navigates away without creating a character
+      if (voiceIdRef.current && !characterCreatedRef.current) {
+        deletePreviewVoice(voiceIdRef.current);
+      }
     };
   }, [audioUrl]);
 
@@ -141,6 +153,12 @@ const VoiceCloneScreen = ({ onBack, onCreated }: Props) => {
 
   const handleGeneratePreview = async () => {
     if (!audioBlob) return;
+    // If there's already a preview voice from a previous attempt, delete it first
+    if (voiceIdRef.current) {
+      deletePreviewVoice(voiceIdRef.current);
+      voiceIdRef.current = null;
+      setVoiceId(null);
+    }
     setIsLoadingPreview(true);
     setError("");
     try {
@@ -159,6 +177,7 @@ const VoiceCloneScreen = ({ onBack, onCreated }: Props) => {
       }
       const data = await res.json();
       setVoiceId(data.voice_id);
+      voiceIdRef.current = data.voice_id;
       setPreviewAudioBase64(data.audio_base64);
       previewAudioRef.current = null;
       const lang = data.detected_language as string | undefined;
@@ -193,6 +212,10 @@ const VoiceCloneScreen = ({ onBack, onCreated }: Props) => {
   };
 
   const handleReRecord = () => {
+    if (voiceIdRef.current) {
+      deletePreviewVoice(voiceIdRef.current);
+      voiceIdRef.current = null;
+    }
     setVoiceId(null);
     setPreviewAudioBase64(null);
     previewAudioRef.current = null;
@@ -268,6 +291,7 @@ const VoiceCloneScreen = ({ onBack, onCreated }: Props) => {
         category: "custom",
         clonedVoice: true,
       };
+      characterCreatedRef.current = true;
       setStep("done");
       setTimeout(() => onCreated(newChar), 1800);
     } catch (e: unknown) {

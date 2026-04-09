@@ -118,6 +118,18 @@ class VoiceCloneCreateRequest(BaseModel):
 
 # ── Endpoints ─────────────────────────────────────────────────────────────────
 
+@router.delete("/api/voice-clone/preview/{voice_id}", status_code=204)
+async def delete_preview_voice(voice_id: str) -> None:
+    """Delete a temporary IVC preview voice — called when the user re-records or navigates away."""
+    client = _get_elevenlabs()
+    try:
+        client.voices.delete(voice_id=voice_id)
+        logger.info("[voice-clone] Deleted preview voice: %s", voice_id)
+    except Exception as e:
+        # Best-effort cleanup — don't surface errors to the client
+        logger.warning("[voice-clone] Failed to delete preview voice %s: %s", voice_id, e)
+
+
 @router.post("/api/voice-clone/preview", response_model=VoiceClonePreviewResponse)
 async def preview_cloned_voice(req: VoiceClonePreviewRequest) -> VoiceClonePreviewResponse:
     """Clone voice via IVC and return a TTS sample so the user can hear it."""
@@ -264,6 +276,13 @@ async def create_cloned_character(req: VoiceCloneCreateRequest) -> CustomCharact
     except Exception as e:
         logger.error("[voice-clone] Agent creation failed: %s", e)
         raise HTTPException(status_code=502, detail="Failed to create agent.")
+
+    # Rename the IVC voice from "Clone Preview ..." to the character name
+    try:
+        client.voices.edit(voice_id=req.voice_id, name=f"ElevenTales - {req.character_name}")
+        logger.info("[voice-clone] Renamed voice %s → ElevenTales - %s", req.voice_id, req.character_name)
+    except Exception as e:
+        logger.warning("[voice-clone] Failed to rename voice %s: %s", req.voice_id, e)
 
     # Persist
     char_data = {
