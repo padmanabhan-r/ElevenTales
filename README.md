@@ -188,6 +188,8 @@ Badges are saved with the story and shown in the **Story Recap** and **Past Adve
 4. Give the character a name and personality
 5. Your cloned voice becomes a full ElevenLabs Conversational AI agent — **you narrate your own story**
 
+Preview voices are automatically deleted if you re-record or navigate away — only the final voice kept when a character is created counts against your quota.
+
 ---
 
 # ElevenLabs — The Engine of Everything
@@ -198,7 +200,7 @@ ElevenLabs is not a feature in ElevenTales. It is the foundation.
 |---------|--------------|
 | **Conversational AI Agents** | Every built-in storyteller is a live ElevenLabs agent — real-time voice conversation, barge-in, tool calling, dynamic branching. The story is never scripted; the agent improvises around what the child says. |
 | **Voice Design API** | Parents and children describe a character — "a gentle old wizard with a deep voice" — and the Voice Design API generates three distinct voice previews. The selected voice becomes a permanent storyteller. |
-| **Instant Voice Cloning (IVC)** | A child records their own voice and clones it. Their voice, their storyteller, their story — narrated by themselves. |
+| **Instant Voice Cloning (IVC)** | A child records their own voice and clones it. Their voice, their storyteller, their story — narrated by themselves. Preview voices are automatically cleaned up if the session is abandoned, so only one voice per character is ever saved. |
 | **Signed URLs** | Agent sessions are authenticated server-side. The ElevenLabs API key never reaches the browser. The frontend calls `/api/session`, which returns a short-lived signed WebSocket URL. |
 | **Dynamic Variables** | `{{theme}}` is injected at session start — the child's chosen theme, camera prop label, or sketch description. The agent receives this before speaking its first word and builds the entire story around it. |
 | **Client Tools** | The agent calls `generate_illustration` at the exact dramatic moment it chooses to trigger a Gemini scene illustration. It calls `award_badge` silently when a child earns one. Both tools fire in the browser — no round-trip to the backend. |
