@@ -1,5 +1,5 @@
-import React, { useRef, useState, useCallback, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useRef, useState, useCallback, useEffect } from "react";
+import { motion, AnimatePresence, TargetAndTransition } from "framer-motion";
 import { Character } from "@/characters";
 import StorybookEmpty from "@/components/StorybookEmpty";
 import { StorySceneGrid } from "@/components/StorySceneGrid";
@@ -141,7 +141,8 @@ function OurStoryCard({
   character: Character;
   scenes: StoryScene[];
 }) {
-  const lastImage = scenes.filter((s) => s.status === "loaded" && s.imageData).at(-1);
+  const loaded = scenes.filter((s) => s.status === "loaded" && s.imageData);
+  const lastImage = loaded[loaded.length - 1];
 
   return (
     <div className="relative flex-1 w-full h-full flex flex-col items-center justify-center overflow-hidden">
@@ -196,7 +197,6 @@ function PreviewEndedCard({ character }: { character: Character }) {
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-const API_BASE = (import.meta.env.VITE_API_URL as string | undefined) ?? "";
 
 interface Props {
   character: Character;
@@ -221,7 +221,7 @@ const BORDER_CLASS: Record<CharacterState, string> = {
   listening: "border-cyan-400/70",
 };
 
-const PORTRAIT_ANIMATE: Record<CharacterState, object> = {
+const PORTRAIT_ANIMATE: Record<CharacterState, TargetAndTransition> = {
   idle:      { scale: [1, 1.018, 1] },
   speaking:  { scale: [1, 1.06, 1] },
   listening: { y: [0, -5, 0] },
@@ -236,7 +236,6 @@ const PORTRAIT_TRANSITION: Record<CharacterState, object> = {
 const STATUS_TEXT: Record<string, string> = {
   idle: "Ready to tell a story!",
   connecting: "Waking up the storyteller...",
-  ready: "Almost ready — take a deep breath!",
   active_idle: "...",
   active_thinking: "Hmm, thinking of something wonderful...",
   active_speaking: "Telling the story...",
@@ -331,7 +330,7 @@ const StoryScreen = ({ character, theme, propImage, propDescription, propImageMi
     prevSessionStateRef.current = sessionState;
     if (
       (sessionState === "ended" || sessionState === "error" || sessionState === "preview_ended") &&
-      (prev === "active" || prev === "ready" || prev === "connecting")
+      (prev === "active" || prev === "connecting")
     ) {
       void saveToGallery(sessionIdRef.current, character, scenesRef.current, storyFirstLineRef.current, awardedBadgesRef.current);
     }
@@ -378,7 +377,7 @@ const StoryScreen = ({ character, theme, propImage, propDescription, propImageMi
   };
 
   const avatarStateClass = AVATAR_STATE_CLASS[characterState];
-  const isConnecting = sessionState === "connecting" || sessionState === "ready";
+  const isConnecting = sessionState === "connecting";
   const isActive = sessionState === "active";
   const statusKey = isActive ? `active_${characterState}` : sessionState;
   const statusText = STATUS_TEXT[statusKey] ?? "";
@@ -475,11 +474,11 @@ const StoryScreen = ({ character, theme, propImage, propDescription, propImageMi
             {/* Buttons */}
             <div className="flex flex-col items-center gap-2" style={{ minHeight: "80px" }}>
               {sessionState === "preview_ended" ? (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center gap-2 text-center">
-                  <p className="font-body text-sm text-foreground/70 max-w-[220px]">
-                    Your free preview story has ended. Start a new one!
-                  </p>
-                  <button onClick={handleBack} className="px-6 py-2 rounded-full bg-primary text-primary-foreground font-body text-sm font-semibold hover:brightness-110 transition-all">
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center gap-2">
+                  <button onClick={handleShowRecap} className="px-6 py-2 rounded-full bg-primary text-primary-foreground font-body text-sm font-semibold hover:brightness-110 transition-all">
+                    📖 See our story!
+                  </button>
+                  <button onClick={handleBack} className="font-body text-sm px-6 py-2 rounded-full border border-border/60 text-muted-foreground hover:text-foreground hover:border-border transition-colors">
                     ✨ Start a New Story
                   </button>
                 </motion.div>
@@ -581,9 +580,6 @@ const StoryScreen = ({ character, theme, propImage, propDescription, propImageMi
                   badges={awardedBadgesRef.current}
                   onClose={() => setShowRecap(false)}
                   onRecapGenerated={async (t, n) => {
-                    // Images are guaranteed loaded at this point (recap API just used them).
-                    // Re-save so the gallery entry always has images, even if earlier saves
-                    // fired while images were still in-flight.
                     await saveToGallery(sessionIdRef.current, character, scenesRef.current, storyFirstLineRef.current, awardedBadgesRef.current);
                     updateGalleryEntry(sessionIdRef.current, { recapTitle: t, narrations: n });
                   }}
