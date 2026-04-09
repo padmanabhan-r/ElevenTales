@@ -25,10 +25,38 @@ router = APIRouter()
 
 _MAX_AUDIO_BYTES = 20 * 1024 * 1024  # 20 MB hard cap
 
-_PREVIEW_TEXT = (
-    "Oh, what a wonderful adventure awaits! I'm so excited to tell you a magical story today. "
-    "Are you ready? There are dragons, hidden castles, and a very brave hero — and that hero is YOU!"
-)
+# Reverse map: BCP-47 prefix → display name (matches _LANG_CODE keys in voice_design.py)
+_LANG_NAME: dict[str, str] = {
+    "en": "English",
+    "hi": "Hindi",
+    "ta": "Tamil",
+    "es": "Spanish",
+    "fr": "French",
+    "zh": "Mandarin",
+    "de": "German",
+    "it": "Italian",
+    "pt": "Portuguese",
+    "ja": "Japanese",
+    "ko": "Korean",
+    "ar": "Arabic",
+    "ru": "Russian",
+}
+
+_PREVIEW_TEXT: dict[str, str] = {
+    "English":    "Oh, what a wonderful adventure awaits! I'm so excited to tell you a magical story today. Are you ready? There are dragons, hidden castles, and a very brave hero — and that hero is YOU!",
+    "Hindi":      "ओह, क्या अद्भुत साहसिक कार्य आगे है! मैं आज आपको एक जादुई कहानी सुनाने के लिए बहुत उत्साहित हूँ। क्या आप तैयार हैं? ड्रेगन हैं, छिपे हुए महल हैं, और एक बहुत बहादुर नायक — और वह नायक आप हैं!",
+    "Tamil":      "ஓ, என்ன அற்புதமான சாகசம் காத்திருக்கிறது! இன்று உங்களுக்கு ஒரு மந்திரமான கதை சொல்ல மிகவும் உற்சாகமாக இருக்கிறேன். தயாரா? டிராகன்கள், மறைந்த கோட்டைகள், மிகவும் தைரியமான ஒரு வீரர் இருக்கிறார் — அந்த வீரர் நீங்கள்தான்!",
+    "Spanish":    "¡Oh, qué maravillosa aventura nos espera! Estoy muy emocionado de contarte una historia mágica hoy. ¿Estás listo? ¡Hay dragones, castillos escondidos y un héroe muy valiente — y ese héroe eres TÚ!",
+    "French":     "Oh, quelle merveilleuse aventure nous attend! Je suis tellement excité de vous raconter une histoire magique aujourd'hui. Êtes-vous prêt? Il y a des dragons, des châteaux cachés et un héros très courageux — et ce héros, c'est VOUS!",
+    "Mandarin":   "哦，多么美好的冒险等着我们！我今天非常兴奋地要给你讲一个神奇的故事。你准备好了吗？有龙、隐藏的城堡，还有一个非常勇敢的英雄——那个英雄就是你！",
+    "German":     "Oh, was für ein wunderbares Abenteuer wartet auf uns! Ich bin so aufgeregt, dir heute eine magische Geschichte zu erzählen. Bist du bereit? Es gibt Drachen, verborgene Schlösser und einen sehr mutigen Helden — und dieser Held bist DU!",
+    "Italian":    "Oh, che meravigliosa avventura ci aspetta! Sono così emozionato di raccontarti una storia magica oggi. Sei pronto? Ci sono draghi, castelli nascosti e un eroe molto coraggioso — e quell'eroe sei TU!",
+    "Portuguese": "Oh, que aventura maravilhosa nos espera! Estou tão animado para te contar uma história mágica hoje. Você está pronto? Há dragões, castelos escondidos e um herói muito corajoso — e esse herói é VOCÊ!",
+    "Japanese":   "ああ、なんて素晴らしい冒険が待っているんでしょう！今日は魔法のような物語を聞かせてあげるのがとても楽しみです。準備はいいですか？ドラゴン、隠された城、そしてとても勇敢なヒーローがいます — そのヒーローはあなたです！",
+    "Korean":     "오, 얼마나 멋진 모험이 기다리고 있는지! 오늘 여러분에게 마법 같은 이야기를 들려드릴 생각에 너무 설렙니다. 준비됐나요? 용, 숨겨진 성, 그리고 아주 용감한 영웅이 있는데 — 그 영웅이 바로 여러분입니다!",
+    "Arabic":     "يا له من مغامرة رائعة تنتظرنا! أنا متحمس جداً لأروي لك قصة سحرية اليوم. هل أنت مستعد؟ هناك تنانين وقلاع مخفية وبطل شجاع جداً — وذلك البطل هو أنت!",
+    "Russian":    "О, какое замечательное приключение нас ждёт! Я так рад рассказать тебе волшебную историю сегодня. Ты готов? Там есть драконы, скрытые замки и очень храбрый герой — и этот герой — ТЫ!",
+}
 
 
 # ── Request / Response models ─────────────────────────────────────────────────
@@ -48,6 +76,7 @@ class VoiceClonePreviewRequest(BaseModel):
 class VoiceClonePreviewResponse(BaseModel):
     voice_id: str
     audio_base64: str  # base64-encoded MP3 preview
+    detected_language: str  # e.g. "English", "Hindi"
 
 
 class VoiceCloneCreateRequest(BaseModel):
@@ -106,11 +135,25 @@ async def preview_cloned_voice(req: VoiceClonePreviewRequest) -> VoiceClonePrevi
         raise HTTPException(status_code=400, detail="Audio file too large (max 20 MB).")
 
     client = _get_elevenlabs()
+    ext = _mime_to_ext(req.mime_type)
+    mime_base = req.mime_type.split(";")[0]
+
+    # Detect spoken language via STT
+    detected_language = "English"
+    try:
+        stt = client.speech_to_text.convert(
+            file=BytesIO(audio_bytes),
+            model_id="scribe_v2",
+        )
+        lang_prefix = (stt.language_code or "en").lower()[:2]
+        detected_language = _LANG_NAME.get(lang_prefix, "English")
+        logger.info("[voice-clone] Detected language: %s (%s)", detected_language, lang_prefix)
+    except Exception as e:
+        logger.warning("[voice-clone] STT language detection failed, defaulting to English: %s", e)
 
     # Clone voice via IVC
     try:
-        ext = _mime_to_ext(req.mime_type)
-        audio_file = (f"sample.{ext}", BytesIO(audio_bytes), req.mime_type.split(";")[0])
+        audio_file = (f"sample.{ext}", BytesIO(audio_bytes), mime_base)
         voice = client.voices.ivc.create(
             name=f"ElevenTales - Clone Preview {int(time.time())}",
             files=[audio_file],
@@ -124,22 +167,28 @@ async def preview_cloned_voice(req: VoiceClonePreviewRequest) -> VoiceClonePrevi
             detail="Voice cloning failed — please try a longer, clearer recording.",
         )
 
-    # Generate TTS preview with the cloned voice
+    # Generate TTS preview with the cloned voice in the detected language
+    preview_text = _PREVIEW_TEXT.get(detected_language, _PREVIEW_TEXT["English"])
+    tts_model = "eleven_flash_v2" if detected_language == "English" else "eleven_multilingual_v2"
     try:
         chunks = client.text_to_speech.convert(
             voice_id=voice_id,
-            text=_PREVIEW_TEXT,
-            model_id="eleven_flash_v2",
+            text=preview_text,
+            model_id=tts_model,
             output_format="mp3_44100_128",
         )
         audio_bytes_out = b"".join(chunks)
         audio_base64 = base64.b64encode(audio_bytes_out).decode()
-        logger.info("[voice-clone] TTS preview generated for voice %s", voice_id)
+        logger.info("[voice-clone] TTS preview generated for voice %s (lang=%s)", voice_id, detected_language)
     except Exception as e:
         logger.error("[voice-clone] TTS preview failed: %s", e)
         raise HTTPException(status_code=502, detail="Failed to generate voice preview.")
 
-    return VoiceClonePreviewResponse(voice_id=voice_id, audio_base64=audio_base64)
+    return VoiceClonePreviewResponse(
+        voice_id=voice_id,
+        audio_base64=audio_base64,
+        detected_language=detected_language,
+    )
 
 
 @router.post("/api/voice-clone/create", response_model=CustomCharacterData)
