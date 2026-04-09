@@ -42,6 +42,7 @@ const VoiceCloneScreen = ({ onBack, onCreated }: Props) => {
   const [previewAudioBase64, setPreviewAudioBase64] = useState<string | null>(null);
   const [isPlayingPreview, setIsPlayingPreview] = useState(false);
   const [isLoadingPreview, setIsLoadingPreview] = useState(false);
+  const [detectedLanguage, setDetectedLanguage] = useState("");
 
   // Details
   const [charName, setCharName] = useState("");
@@ -160,6 +161,11 @@ const VoiceCloneScreen = ({ onBack, onCreated }: Props) => {
       setVoiceId(data.voice_id);
       setPreviewAudioBase64(data.audio_base64);
       previewAudioRef.current = null;
+      const lang = data.detected_language as string | undefined;
+      if (lang) {
+        setDetectedLanguage(lang);
+        if (LANGUAGES.includes(lang)) setLanguage(lang);
+      }
       setStep("preview");
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "Something went wrong");
@@ -191,6 +197,7 @@ const VoiceCloneScreen = ({ onBack, onCreated }: Props) => {
     setPreviewAudioBase64(null);
     previewAudioRef.current = null;
     setIsPlayingPreview(false);
+    setDetectedLanguage("");
     setStep("record");
   };
 
@@ -384,6 +391,13 @@ const VoiceCloneScreen = ({ onBack, onCreated }: Props) => {
                   <span className="text-3xl">{isPlayingPreview ? "⏸" : "▶"}</span>
                   <span className="text-xs">{isPlayingPreview ? "Pause" : "Play"}</span>
                 </motion.button>
+
+                {detectedLanguage && (
+                  <div className="flex items-center gap-2 bg-muted/40 rounded-xl px-4 py-2">
+                    <span className="text-sm text-muted-foreground font-body">Detected Language:</span>
+                    <span className="text-sm font-display font-bold text-primary">{detectedLanguage}</span>
+                  </div>
+                )}
               </div>
 
               <div className="flex gap-3">
