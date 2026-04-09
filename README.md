@@ -24,7 +24,7 @@ Every voice is distinct. **Design a storyteller** from scratch, shaping a voice 
     - [Sketch a Theme](#3-sketch-a-theme)
   - [A Living, Illustrated Story](#a-living-illustrated-story)
   - [Creativity Rewards](#creativity-rewards)
-  - [Story Recap](#story-recap)
+  - [Story Recap & PDF Download](#story-recap--pdf-download)
   - [Voice Design — Build a Storyteller](#voice-design--build-a-storyteller)
   - [Voice Cloning — Become the Storyteller](#voice-cloning--become-the-storyteller)
 - [ElevenLabs — The Engine of Everything](#elevenlabs--the-engine-of-everything)
@@ -184,8 +184,9 @@ Badges are saved with the story and shown in the **Story Recap** and **Past Adve
 
 1. Go to **My Created Storytellers** → **Clone a Voice**
 2. Record a short voice sample (or upload audio)
-3. Give the character a name and personality
-4. Your cloned voice becomes a full ElevenLabs Conversational AI agent — **you narrate your own story**
+3. ElevenLabs **Scribe v2** automatically detects the spoken language — the preview plays back in that language
+4. Give the character a name and personality
+5. Your cloned voice becomes a full ElevenLabs Conversational AI agent — **you narrate your own story**
 
 ---
 
@@ -204,6 +205,7 @@ ElevenLabs is not a feature in ElevenTales. It is the foundation.
 | **Sound Effects Generation** | Scene reveal sound effects are generated live via the ElevenLabs Sound Effects API — a soft magical chime as each illustration appears. |
 | **Expressive Voice Model** | All agents use `eleven_v3_conversational` with **expressive mode** enabled — voices convey genuine emotion, not flat narration. Excitement, suspense, warmth, and wonder come through naturally as the story unfolds. |
 | **Multilingual TTS** | Built-in characters speak in English, Hindi, and Tamil via `eleven_v3_conversational`. The storyteller's language is the child's language. |
+| **Speech-to-Text (Scribe v2)** | Used during voice cloning — detects the language the user spoke, auto-selects the correct preview text and TTS model, and surfaces a "Detected Language" badge in the UI. |
 | **`@11labs/client` SDK** | The frontend connects directly to the ElevenLabs WebSocket using the official SDK — real-time audio, barge-in, and tool call dispatch, all handled natively. |
 
 ---
@@ -220,7 +222,8 @@ ElevenLabs is not a feature in ElevenTales. It is the foundation.
 - **Dynamic scene illustrations** — **Nano Banana** 🍌 generates storybook art as the story unfolds, each scene visually continuous with the last
 - **Dual illustration trigger** — agent calls `generate_illustration` at dramatic moments; a frontend fallback fires if the agent pauses
 - **Creativity badges** — silently awarded for genuine creative contribution (naming a character, inventing a twist — not just saying "yes")
-- **Story recap** — full illustrated storybook with a generated title at the end of every session
+- **Story recap** — full illustrated storybook with a generated title at the end of every session; download as a **PDF** to keep forever
+- **2-minute preview mode** — free users get a full 2-minute story experience; a graceful end screen offers the recap or a fresh start
 - **Past Adventures** — gallery of every previous story with its illustrations
 - **Child-safe content moderation** — themes, camera subjects, and sketches screened before the story begins
 - **Sound effects** — ElevenLabs-generated audio chimes on every scene reveal
@@ -248,7 +251,9 @@ Backend (FastAPI)
   ├── /api/characters/custom            → list custom characters
   ├── /api/characters/design-previews   → Voice Design previews
   ├── /api/characters/save              → save character + create agent
-  └── /api/character/avatar             → Gemini character portrait
+  ├── /api/character/avatar             → Gemini character portrait
+  ├── /api/voice-clone/preview          → Scribe v2 language detect + IVC clone + TTS preview
+  └── /api/voice-clone/create           → create agent from cloned voice
 ```
 
 ### The Agent
@@ -278,6 +283,7 @@ The agent decides the visual moment, writes its own scene description, and fires
 | **ElevenLabs Conversational AI** | **The Agent** — real-time voice conversation, barge-in, autonomous tool calls (`generate_illustration`, `award_badge`) |
 | **ElevenLabs Voice Design API** | Generate 3 voice previews from a text description; create custom storyteller voices |
 | **ElevenLabs Instant Voice Cloning (IVC)** | Clone a child's voice into a full storyteller agent |
+| **ElevenLabs Speech-to-Text (Scribe v2)** | Auto-detects spoken language from the voice clone recording; selects preview text and TTS model accordingly |
 | **ElevenLabs Sound Effects API** | Live-generated audio chimes on scene reveal |
 | `eleven_v3_conversational` + expressive mode | TTS for all characters — conveys genuine emotion, warmth, and drama |
 | `gemini-3.1-flash-image-preview` (**Nano Banana 2** 🍌) | Storybook scene illustration |
