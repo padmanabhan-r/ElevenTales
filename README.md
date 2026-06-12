@@ -1,6 +1,6 @@
 # ElevenTales
 
-[![Live App](https://img.shields.io/badge/Live%20App-eleventales.replit.app-orange?style=flat&logo=googlechrome&logoColor=white)](https://eleventales.replit.app) [![ElevenLabs](https://img.shields.io/badge/ElevenLabs%20Conv%20AI-FF6B35?style=flat&logoColor=white)](https://elevenlabs.io) [![Voice Design](https://img.shields.io/badge/Voice%20Design-FF6B35?style=flat&logoColor=white)](https://elevenlabs.io/voice-design) [![Voice Cloning](https://img.shields.io/badge/Voice%20Cloning%20IVC-FF6B35?style=flat&logoColor=white)](https://elevenlabs.io/voice-cloning) [![Python](https://img.shields.io/badge/Python%203.13-3776AB?style=flat&logo=python&logoColor=white)](https://www.python.org) [![React](https://img.shields.io/badge/React%2018-61DAFB?style=flat&logo=react&logoColor=black)](https://react.dev)
+[![Run Locally](https://img.shields.io/badge/Run%20Locally-localhost%3A8080-lightgrey?style=flat&logo=googlechrome&logoColor=white)](#running-locally) [![ElevenLabs](https://img.shields.io/badge/ElevenLabs%20Conv%20AI-FF6B35?style=flat&logoColor=white)](https://elevenlabs.io) [![Voice Design](https://img.shields.io/badge/Voice%20Design-FF6B35?style=flat&logoColor=white)](https://elevenlabs.io/voice-design) [![Voice Cloning](https://img.shields.io/badge/Voice%20Cloning%20IVC-FF6B35?style=flat&logoColor=white)](https://elevenlabs.io/voice-cloning) [![Python](https://img.shields.io/badge/Python%203.13-3776AB?style=flat&logo=python&logoColor=white)](https://www.python.org) [![React](https://img.shields.io/badge/React%2018-61DAFB?style=flat&logo=react&logoColor=black)](https://react.dev)
 
 **ElevenTales turns a child's words into a living, breathing story.**
 
@@ -306,16 +306,16 @@ The agent decides the visual moment, writes its own scene description, and fires
 ### Infrastructure
 | Service | Role |
 |---|---|
-| **Replit** | Deployment — `bash start.sh` runs identically locally and on Replit |
-| **Replit Secrets** | Environment variable management — no secrets in code |
+| **Localhost** | `bash start.sh` builds the frontend and starts FastAPI at `http://localhost:8080` |
+| **Replit** | Previously hosted on Replit free tier — deployment is now down; run locally instead |
 
 ---
 
 # Try It Out
 
-> **[https://eleventales.replit.app](https://eleventales.replit.app)** — open the app, pick a storyteller, and speak.
+> **The hosted Replit deployment has been taken down** (it was running on a free-tier account). To try ElevenTales, run it locally — see [Running Locally](#running-locally) below.
 
-1. Open the app on a device with a microphone
+1. Start the app locally with `bash start.sh` and open [http://localhost:8080](http://localhost:8080) on a device with a microphone
 2. Click **Begin Your Adventure** → pick a storyteller → choose a theme, use Magic Camera, or draw a Sketch
 3. Allow microphone access — the story starts immediately
 4. Speak to redirect the story, interrupt mid-sentence, or suggest ideas
@@ -373,5 +373,4 @@ Builds the frontend, starts FastAPI at `http://localhost:8080`.
 | Backend | http://localhost:8080 |
 | Health | http://localhost:8080/api/health |
 
-> On Replit: set secrets in the Secrets panel. `bash start.sh` works identically.
 
