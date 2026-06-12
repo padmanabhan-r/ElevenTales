@@ -2,6 +2,8 @@
 
 [![ElevenLabs](https://img.shields.io/badge/ElevenLabs%20Conv%20AI-FF6B35?style=flat&logoColor=white)](https://elevenlabs.io) [![Voice Design](https://img.shields.io/badge/Voice%20Design-FF6B35?style=flat&logoColor=white)](https://elevenlabs.io/voice-design) [![Voice Cloning](https://img.shields.io/badge/Voice%20Cloning%20IVC-FF6B35?style=flat&logoColor=white)](https://elevenlabs.io/voice-cloning) [![Python](https://img.shields.io/badge/Python%203.13-3776AB?style=flat&logo=python&logoColor=white)](https://www.python.org) [![React](https://img.shields.io/badge/React%2018-61DAFB?style=flat&logo=react&logoColor=black)](https://react.dev)
 
+> **Note:** This app was hosted on Replit's free tier and has been taken down. To try it, [run it locally](#running-locally).
+
 **ElevenTales turns a child's words into a living, breathing story.**
 
 A voice-first interactive storytelling app for kids, powered by **ElevenLabs Conversational AI**, **Voice Design**, **Voice Cloning**, and **Nano Banana 2** 🍌.
